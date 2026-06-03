@@ -3,86 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ООО «Сиджакс» — Официальный сайт</title>
+    <title>ООО «Сиджакс» // High-Tech IT & Software Development</title>
+    <!-- Подключаем шрифты для жесткого премиального вайба -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header class="glass-header">
-        <div class="logo">Sidjacks</div>
-        <nav>
-            <div class="lang-switcher">
-                <button onclick="changeLanguage('ru')" id="btn-ru" class="active">RU</button>
-                <button onclick="changeLanguage('en')" id="btn-en">EN</button>
-                <button onclick="changeLanguage('de')" id="btn-de">DE</button>
+    <!-- Навигация (iOS 26 момент) -->
+    <header class="glass-navigation">
+        <div class="brand-zone">
+            <span class="logo-accent">⚡</span>
+            <div class="logo">Sjax<span class="logo-dot">.</span>core</div>
+        </div>
+        <nav class="nav-controls">
+            <div class="lang-selector">
+                <button onclick="setLang('ru')" id="lang-ru" class="active-lang">RU</button>
+                <button onclick="setLang('en')" id="lang-en">EN</button>
+                <button onclick="setLang('de')" id="lang-de">DE</button>
             </div>
-            <a href="#admin" class="admin-link-icon" onclick="toggleAdminModal()">⚙️</a>
+            <button class="control-gear" onclick="openAdminModal()">⚙️</button>
         </nav>
     </header>
 
-    <main class="container">
-        <section class="hero">
-            <h1 id="hero-title">Разработка ИТ-решений будущего</h1>
-            <p id="hero-subtitle">Создаем высокотехнологичное программное обеспечение и оптимизируем процессы.</p>
+    <main class="main-wrapper">
+        
+        <!-- Герой-секция с профилем Гендиректора -->
+        <section class="hero-section">
+            <div class="ceo-badge glass">
+                <div class="avatar-container">
+                    <!-- Дефолтная заглушка, через админку сможешь поставить свою фотку -->
+                    <img id="ceo-avatar" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="CEO">
+                    <div class="online-pulse"></div>
+                </div>
+                <div class="ceo-info">
+                    <span class="ceo-title">Генеральный директор & Главный архитектор</span>
+                    <span class="ceo-name">Бежин И. А.</span>
+                </div>
+            </div>
+            
+            <h1 id="main-headline">Мы не участвуем в шаблонных тендерах.<br><span class="purple-gradient">Мы создаем стандарты индустрии.</span></h1>
+            <p id="main-subline">Забудьте про бюрократию Газпрома. ООО «Сиджакс» — это кастомная разработка ПО, кибербезопасность и автоматизация процессов на базе Linux систем.</p>
         </section>
 
-        <section class="tech-section">
-            <h2 id="tech-title">Технологический стек</h2>
-            <div class="tech-grid">
-                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" alt="C++"><span>C++</span></div>
-                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="C#"><span>C#</span></div>
-                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python"><span>Python</span></div>
-                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" alt="Kotlin"><span>Kotlin</span></div>
-                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/lua/lua-original.svg" alt="Lua"><span>Lua</span></div>
-                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JS"><span>JavaScript</span></div>
-                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TS"><span>TypeScript</span></div>
-                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original-wordmark.svg" alt="Go"><span>Go</span></div>
-                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" alt="SQL"><span>PostgreSQL</span></div>
+        <!-- ИНТЕРАКТИВНЫЙ БЛОК: Сделай свой тендер за 10 секунд (То, чего нет у других!) -->
+        <section class="tender-constructor glass">
+            <div class="tender-header">
+                <span class="badge">Уникальная фича</span>
+                <h2 id="tender-title">Умный ИТ-Конструктор ТЗ</h2>
+                <p id="tender-desc">Введите ключевые слова вашей задачи, и наша система мгновенно адаптирует стек.</p>
+            </div>
+            <div class="tender-form">
+                <div class="input-group">
+                    <input type="text" id="tender-keywords" placeholder="Например: Высокая нагрузка, защита данных, парсинг, мобильное приложение...">
+                    <button onclick="analyzeTender()" id="tender-btn">Сгенерировать решение</button>
+                </div>
+                <div id="tender-result" class="tender-output" style="display: none;">
+                    <!-- Сюда скрипт выведет кастомный ответ -->
+                </div>
             </div>
         </section>
 
-        <section class="services-section">
-            <h2 id="services-title">Стоимость услуг</h2>
-            <div class="services-grid">
-                <div class="service-card glass">
-                    <h3>Разработка ПО</h3>
-                    <p id="price-1">от 150 000 ₽ / по ТЗ</p>
+        <!-- ХАРДКОРНЫЙ ТЕХНОЛОГИЧЕСКИЙ СТЕК -->
+        <section class="matrix-stack">
+            <h2 id="stack-headline">Инженерная экосистема (Стек)</h2>
+            <p class="section-meta">Официально используемое ПО и языки в соответствии с требованиями ИТ-аккредитации.</p>
+            
+            <div class="matrix-grid">
+                <!-- Категория: Системы -->
+                <div class="stack-group glass">
+                    <h3>Kernel & OS</h3>
+                    <div class="icon-flex">
+                        <div class="icon-item" title="Linux Enterprise"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg"><span>Linux Core</span></div>
+                        <div class="icon-item" title="Arch Linux"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/archlinux/archlinux-original.svg"><span>Arch</span></div>
+                        <div class="icon-item" title="Ubuntu Server"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ubuntu/ubuntu-plain.svg"><span>Ubuntu</span></div>
+                    </div>
                 </div>
-                <div class="service-card glass">
-                    <h3>ИТ-Консалтинг</h3>
-                    <p id="price-2">от 5 000 ₽ / час</p>
+
+                <!-- Категория: Разработка -->
+                <div class="stack-group glass">
+                    <h3>Languages & Backend</h3>
+                    <div class="icon-flex">
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg"><span>C++</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg"><span>C#</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"><span>Python</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg"><span>Kotlin</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original-wordmark.svg"><span>Go (Golang)</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/lua/lua-original.svg"><span>Lua</span></div>
+                    </div>
+                </div>
+
+                <!-- Категория: Веб -->
+                <div class="stack-group glass">
+                    <h3>Web & Frontend Architecture</h3>
+                    <div class="icon-flex">
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"><span>JavaScript ES6</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg"><span>TypeScript</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"><span>Node.js</span></div>
+                    </div>
+                </div>
+
+                <!-- Категория: Безопасность и Среда -->
+                <div class="stack-group glass">
+                    <h3>SecOps & Infrastructure</h3>
+                    <div class="icon-flex">
+                        <!-- Иконка Касперского через чистый SVG, так как в девиконсе его нет -->
+                        <div class="icon-item" title="Kaspersky Lab Integration">
+                            <svg viewBox="0 0 24 24" width="40" height="40" fill="#006D55"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                            <span>Kaspersky Sec</span>
+                        </div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg"><span>Docker</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg"><span>Bash Scripting</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg"><span>PostgreSQL</span></div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="requisites-section glass">
-            <h2 id="req-title">Официальные реквизиты ООО «Сиджакс»</h2>
-            <div class="req-grid">
-                <div><strong>Полное наименование:</strong> <span>Общество с Ограниченной Ответственностью "Сиджакс"</span></div>
-                <div><strong>Краткое наименование:</strong> <span>ООО "Сиджакс"</span></div>
-                <div><strong>Руководитель:</strong> <span>Бежин Игорь Алексеевич</span></div>
-                <div><strong>Юридический адрес:</strong> <span>197375, г Санкт-Петербург, ул Вербная, д 27 литера а, помещ 17-Н</span></div>
-                <div><strong>ИНН:</strong> <span>7814863792</span></div>
-                <div><strong>ОГРН:</strong> <span>1267800038098</span></div>
-                <div><strong>Основной ОКВЭД:</strong> <span>62.01 (Разработка компьютерного программного обеспечения)</span></div>
+        <!-- КОРПОРАТИВНЫЙ БЛОК: Официальные Данные ООО -->
+        <section class="legal-board glass">
+            <h2 id="legal-title">Раскрытие информации и реквизиты</h2>
+            <div class="legal-grid">
+                <div class="legal-row"><span>Полное наименование</span><strong>Общество с Ограниченной Ответственностью "Сиджакс"</strong></div>
+                <div class="legal-row"><span>Краткое наименование</span><strong>ООО "Сиджакс"</strong></div>
+                <div class="legal-row"><span>Генеральный директор</span><strong>Бежин Игорь Алексеевич (с 22.05.2026)</strong></div>
+                <div class="legal-row"><span>Юридический адрес</span><strong>197375, г Санкт-Петербург, ул Вербная, д 27 литера а, помещ 17-Н</strong></div>
+                <div class="legal-row"><span>ИНН / КПП</span><strong>7814863792 / 781401001</strong></div>
+                <div class="legal-row"><span>ОГРН</span><strong>1267800038098 (от 22 мая 2026)</strong></div>
+                <div class="legal-row"><span>Основной ОКВЭД</span><strong>62.01 — Разработка компьютерного программного обеспечения</strong></div>
             </div>
         </section>
     </main>
 
-    <div id="admin-modal" class="modal">
-        <div class="modal-content glass">
-            <span class="close-btn" onclick="toggleAdminModal()">&times;</span>
-            <h2>Панель управления (Вход)</h2>
-            <div id="admin-auth">
-                <input type="password" id="admin-password" placeholder="Введите ключ доступа...">
-                <button onclick="loginAdmin()">Войти</button>
+    <!-- Сверхсекретный Терминал Админки (Модалка) -->
+    <div id="secure-gate" class="admin-overlay">
+        <div class="terminal-box glass">
+            <div class="terminal-header">
+                <div class="terminal-dots"><span></span><span></span><span></span></div>
+                <span class="terminal-title">sjax@admin-panel:~</span>
+                <span class="close-gate" onclick="closeAdminModal()">&times;</span>
             </div>
-            <div id="admin-panel" style="display: none;">
-                <h3>Редактировать контент сайта</h3>
-                <label>Заголовок Hero:</label>
-                <input type="text" id="edit-hero-title">
-                <button onclick="saveAdminChanges()">Сохранить изменения</button>
-                <p style="color: #4ade80; margin-top: 10px;" id="save-status"></p>
+            <div class="terminal-body">
+                <!-- Слой авторизации -->
+                <div id="auth-zone">
+                    <p class="terminal-text">root@sjax-core: # enter_security_key</p>
+                    <input type="password" id="gate-pass" placeholder="••••••••••••" autofocus>
+                    <button onclick="tryGateAccess()" class="terminal-btn">Execute</button>
+                </div>
+                <!-- Слой управления -->
+                <div id="control-zone" style="display: none;">
+                    <p class="terminal-success">[SUCCESS] Access granted to Dev-Console.</p>
+                    <div class="control-form">
+                        <label>Изменить главный слоган сайта:</label>
+                        <input type="text" id="input-headline">
+                        
+                        <label>Ссылка на твой новый аватар (URL картинки):</label>
+                        <input type="text" id="input-avatar" placeholder="https://...">
+                        
+                        <button onclick="commitDevChanges()" class="terminal-btn save-btn">Commit Changes</button>
+                        <p id="console-log"></p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
