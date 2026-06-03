@@ -1,5 +1,6 @@
 /**
- * Скриптная система Cjax Core v2.6
+ * Архитектура ядра Cjax.core
+ * Полноценные CRUD-операции над СУБД, темы и прямая авторизация юзеров.
  */
 
 const i18n = {
@@ -32,31 +33,48 @@ const i18n = {
     }
 };
 
-const mockAccounts = {
-    Google: [
-        { name: "Игорь Бежин", email: "igorb9475@gmail.com" },
-        { name: "Рахид ИТ", email: "rahid.dev@gmail.com" }
-    ],
-    Yandex: [
-        { name: "Бежин И.А.", email: "i.bezhin@yandex.ru" },
-        { name: "Владимир КИП", email: "vladimir.kip@yandex.ru" }
-    ],
-    VK: [
-        { name: "Игорь Алексеевич", email: "id2074829@vk.com" },
-        { name: "Виктория Арт", email: "vvn.art@vk.com" }
-    ]
+let currentUser = JSON.parse(localStorage.getItem('cjax_user_session')) || null;
+let currentTheme = localStorage.getItem('cjax_theme') || 'dark';
+
+window.onload = function() {
+    // Применяем тему
+    const body = document.getElementById('app-body');
+    body.className = `theme-${currentTheme}`;
+    document.getElementById('theme-toggle-btn').innerText = currentTheme === 'dark' ? '☀️ Светлая тема' : '🌙 Тёмная тема';
+
+    if(localStorage.getItem('sjax_custom_headline')) {
+        document.getElementById('main-headline').innerHTML = localStorage.getItem('sjax_custom_headline');
+    }
+    const savedAvatar = localStorage.getItem('sjax_custom_avatar') || "https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png";
+    document.getElementById('ceo-avatar').src = savedAvatar;
+
+    updateUserInterface();
+    renderGlobalTenders();
 };
 
-let currentUser = JSON.parse(localStorage.getItem('sjax_logged_user')) || null;
-let selectedProvider = "";
+/* Модуль переключения тем */
+function toggleTheme() {
+    const body = document.getElementById('app-body');
+    if (body.classList.contains('theme-dark')) {
+        body.classList.remove('theme-dark');
+        body.classList.add('theme-light');
+        currentTheme = 'light';
+        document.getElementById('theme-toggle-btn').innerText = '🌙 Тёмная тема';
+    } else {
+        body.classList.remove('theme-light');
+        body.classList.add('theme-dark');
+        currentTheme = 'dark';
+        document.getElementById('theme-toggle-btn').innerText = '☀️ Светлая тема';
+    }
+    localStorage.setItem('cjax_theme', currentTheme);
+}
 
+/* Локализация */
 function setLang(lang) {
     document.querySelectorAll('.lang-box button').forEach(b => b.classList.remove('active-lang'));
     document.getElementById(`lang-${lang}`).classList.add('active-lang');
-
     const customH = localStorage.getItem('sjax_custom_headline');
     document.getElementById('main-headline').innerHTML = (lang === 'ru' && customH) ? customH : i18n[lang].headline;
-    
     document.getElementById('main-subline').innerText = i18n[lang].subline;
     document.getElementById('tender-title').innerText = i18n[lang].tenderT;
     document.getElementById('tender-desc').innerText = i18n[lang].tenderD;
@@ -65,18 +83,7 @@ function setLang(lang) {
     document.getElementById('legal-title').innerText = i18n[lang].legalH;
 }
 
-window.onload = function() {
-    if(localStorage.getItem('sjax_custom_headline')) {
-        document.getElementById('main-headline').innerHTML = localStorage.getItem('sjax_custom_headline');
-    }
-    const savedAvatar = localStorage.getItem('sjax_custom_avatar') || "https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png";
-    document.getElementById('ceo-avatar').src = savedAvatar;
-
-    updateUserInterface();
-    renderUserTenders();
-};
-
-/* Скрытый Вызов Терминала Управления по Горячим Клавишам (Ctrl + Alt + A) */
+/* Скрытый вызов пульта управления по Ctrl + Alt + A */
 window.addEventListener('keydown', function(e) {
     if (e.ctrlKey && e.altKey && e.code === 'KeyA') {
         e.preventDefault();
@@ -86,11 +93,11 @@ window.addEventListener('keydown', function(e) {
 
 function openAdminModal() {
     document.getElementById('secure-gate').style.display = 'flex';
-    
     if (localStorage.getItem('sjax_admin_authenticated') === 'true') {
         document.getElementById('auth-zone').style.display = 'none';
         document.getElementById('control-zone').style.display = 'block';
         loadAdminFormValues();
+        renderAdminTendersEditor();
     } else {
         document.getElementById('auth-zone').style.display = 'block';
         document.getElementById('control-zone').style.display = 'none';
@@ -100,14 +107,14 @@ function openAdminModal() {
 function closeAdminModal() { document.getElementById('secure-gate').style.display = 'none'; }
 
 function tryGateAccess() {
-    const inputPass = document.getElementById('gate-pass').value;
-    if(inputPass === 'sudo_rm_rf_sidjacks') {
+    if(document.getElementById('gate-pass').value === 'sudo_rm_rf_sidjacks') {
         localStorage.setItem('sjax_admin_authenticated', 'true');
         document.getElementById('auth-zone').style.display = 'none';
         document.getElementById('control-zone').style.display = 'block';
         loadAdminFormValues();
+        renderAdminTendersEditor();
     } else {
-        alert('Ошибка дешифрации ключа. Отказано.');
+        alert('Доступ запрещен. Неверная цифровая подпись.');
     }
 }
 
@@ -116,60 +123,93 @@ function loadAdminFormValues() {
     document.getElementById('input-avatar').value = document.getElementById('ceo-avatar').src;
 }
 
-function selectPresetAvatar(url) {
-    document.getElementById('input-avatar').value = url;
+function commitDevChanges() {
+    const h = document.getElementById('input-headline').value;
+    const a = document.getElementById('input-avatar').value;
+    localStorage.setItem('sjax_custom_headline', h);
+    document.getElementById('main-headline').innerHTML = h;
+    if(a.trim() !== "") {
+        localStorage.setItem('sjax_custom_avatar', a);
+        document.getElementById('ceo-avatar').src = a;
+    }
+    alert('Системные параметры успешно применены.');
 }
 
-function commitDevChanges() {
-    const nextHeadline = document.getElementById('input-headline').value;
-    const nextAvatar = document.getElementById('input-avatar').value;
+/* Генерация списка тендеров для РЕДАКТИРОВАНИЯ админом */
+function renderAdminTendersEditor() {
+    const container = document.getElementById('admin-tenders-list-edit');
+    let db = JSON.parse(localStorage.getItem('sjax_global_database')) || [];
     
-    localStorage.setItem('sjax_custom_headline', nextHeadline);
-    document.getElementById('main-headline').innerHTML = nextHeadline;
-    
-    if(nextAvatar.trim() !== "") {
-        localStorage.setItem('sjax_custom_avatar', nextAvatar);
-        document.getElementById('ceo-avatar').src = nextAvatar;
+    if(db.length === 0) {
+        container.innerHTML = `<p style="color:var(--color-muted); font-size:12px;">База данных заявок пуста.</p>`;
+        return;
     }
     
-    const log = document.getElementById('console-log');
-    log.style.color = "#22c55e";
-    log.innerText = ">>> Системные параметры переконфигурированы.";
+    container.innerHTML = "";
+    db.forEach((item, index) => {
+        container.innerHTML += `
+            <div class="admin-tender-edit-card">
+                <span style="font-size:11px; color:var(--color-accent)">ID транзакции: ${item.id} (От: ${item.user})</span>
+                <div class="admin-edit-grid">
+                    <input type="text" id="edit-comp-${index}" value="${item.company}" placeholder="Компания">
+                    <input type="text" id="edit-key-${index}" value="${item.keywords}" placeholder="Требования">
+                    <input type="number" id="edit-budget-${index}" value="${item.budget || 0}" placeholder="Бюджет">
+                </div>
+                <button onclick="saveTenderByAdmin(${index})" class="btn-primary" style="padding:4px 10px; font-size:11px; margin-top:8px;">Сохранить изменения</button>
+                <button onclick="deleteTenderByAdmin(${index})" class="btn-secondary" style="padding:4px 10px; font-size:11px; margin-top:8px; color:#ef4444; border-color:rgba(239,68,68,0.2)">Удалить</button>
+            </div>
+        `;
+    });
+}
+
+function saveTenderByAdmin(index) {
+    let db = JSON.parse(localStorage.getItem('sjax_global_database')) || [];
+    db[index].company = document.getElementById(`edit-comp-${index}`).value.trim();
+    db[index].keywords = document.getElementById(`edit-key-${index}`).value.trim();
+    db[index].budget = document.getElementById(`edit-budget-${index}`).value;
     
-    setTimeout(() => { log.innerText = ""; closeAdminModal(); }, 1000);
+    localStorage.setItem('sjax_global_database', JSON.stringify(db));
+    renderAdminTendersEditor();
+    renderGlobalTenders();
+}
+
+function deleteTenderByAdmin(index) {
+    let db = JSON.parse(localStorage.getItem('sjax_global_database')) || [];
+    db.splice(index, 1);
+    localStorage.setItem('sjax_global_database', JSON.stringify(db));
+    renderAdminTendersEditor();
+    renderGlobalTenders();
 }
 
 function revokeAdminAccess() {
     localStorage.removeItem('sjax_admin_authenticated');
-    document.getElementById('gate-pass').value = '';
-    document.getElementById('control-zone').style.display = 'none';
-    document.getElementById('auth-zone').style.display = 'block';
     closeAdminModal();
 }
 
-/* Модуль обработки данных ТЗ */
+/* Работа со спецификациями ТЗ */
 function submitTenderToDB() {
     const company = document.getElementById('client-company').value.trim();
     const email = document.getElementById('client-email').value.trim();
     const keywords = document.getElementById('tender-keywords').value.trim();
+    const budget = document.getElementById('client-budget').value.trim();
     const output = document.getElementById('tender-result');
 
     if (!company || !email || !keywords) {
         output.style.display = "block";
         output.style.borderColor = "#ef4444";
         output.style.color = "#f87171";
-        output.innerHTML = `[ERROR] Ошибка заполнения полей спецификации.`;
+        output.innerHTML = `[ERROR] Заполните обязательные поля компании, почты и требований.`;
         return;
     }
 
-    const tenderId = "C_JX_" + Math.floor(Math.random() * 900000 + 100000);
     const newTender = {
-        id: tenderId,
+        id: "C_JX_" + Math.floor(Math.random() * 900000 + 100000),
         company: company,
         email: email,
         keywords: keywords,
+        budget: budget ? budget : "Не указан",
         date: new Date().toLocaleString(),
-        user: currentUser ? currentUser.name : "Anonymous Link"
+        user: currentUser ? currentUser.name : "Anonymous Base"
     };
 
     let db = JSON.parse(localStorage.getItem('sjax_global_database')) || [];
@@ -177,17 +217,18 @@ function submitTenderToDB() {
     localStorage.setItem('sjax_global_database', JSON.stringify(db));
 
     output.style.display = "block";
-    output.style.borderColor = "rgba(34, 197, 94, 0.2)";
+    output.style.borderColor = "rgba(34, 197, 94, 0.3)";
     output.style.color = "#4ade80";
-    output.innerHTML = `[OK] Заявка закомичена в стек транзакций. ID: ${tenderId}`;
+    output.innerHTML = `[OK] Спецификация зафиксирована под ID: ${newTender.id}`;
 
     document.getElementById('client-company').value = '';
     document.getElementById('client-email').value = '';
     document.getElementById('tender-keywords').value = '';
-    renderUserTenders();
+    document.getElementById('client-budget').value = '';
+    renderGlobalTenders();
 }
 
-function renderUserTenders() {
+function renderGlobalTenders() {
     const box = document.getElementById('my-tenders-box');
     const container = document.getElementById('tenders-container');
     let db = JSON.parse(localStorage.getItem('sjax_global_database')) || [];
@@ -199,96 +240,84 @@ function renderUserTenders() {
 
     box.style.display = "block";
     container.innerHTML = "";
-    
-    db.reverse().forEach(item => {
+    db.slice().reverse().forEach(item => {
         container.innerHTML += `
             <div class="db-tender-item">
                 <strong>[${item.date}] ${item.id}</strong><br>
-                Организация: ${item.company} | Сигнатура: ${item.keywords} (${item.user})
+                Контрагент: <strong>${item.company}</strong> | Архитектура: ${item.keywords} | Утвержденный бюджет: <span style="color:var(--color-glow)">${item.budget} руб.</span> (${item.user})
             </div>
         `;
     });
 }
 
-/* Полноценная сессия пользователей */
+/* Модуль честной авторизации (Ник/Пароль или Имитация OAuth провайдеров) */
 function toggleUserModal() {
     const modal = document.getElementById('user-gate');
     modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-    if(modal.style.display === 'flex') renderUserModalContent();
+    if(modal.style.display === 'flex') drawAuthInterface();
 }
 
-function renderUserModalContent() {
+function drawAuthInterface() {
     const body = document.getElementById('user-modal-body');
     if (currentUser) {
         body.innerHTML = `
-            <p class="console-success">[AUTHORIZED] Токен действителен.</p>
-            <p style="font-size:13px; margin-bottom:16px;">Субъект: <strong>${currentUser.name}</strong></p>
-            <p style="font-size:11px; color:var(--color-muted); margin-bottom:12px;">Провайдер: ${currentUser.provider}</p>
-            <button onclick="logoutUser()" class="btn-primary" style="background:#ef4444; color:#fff;">Завершить сессию</button>
+            <p class="console-success">[AUTHORIZED] Сессия активна.</p>
+            <p style="font-size:14px; margin-bottom:8px;">Пользователь: <strong>${currentUser.name}</strong></p>
+            <p style="font-size:11px; color:var(--color-muted); margin-bottom:16px;">Канал аутентификации: ${currentUser.provider}</p>
+            <button onclick="logoutUser()" class="btn-primary" style="background:#ef4444; color:#fff; width:100%;">Завершить сессию</button>
         `;
     } else {
         body.innerHTML = `
-            <p style="font-size:12px; color:var(--color-muted); margin-bottom:12px;">Выберите OAuth2 провайдера для авторизации:</p>
-            <div class="oauth-list">
-                <div class="oauth-btn oa-g" onclick="openOAuthSelector('Google')">Google Workspace ID</div>
-                <div class="oauth-btn oa-y" onclick="openOAuthSelector('Yandex')">Яндекс ID Коннект</div>
-                <div class="oauth-btn oa-v" onclick="openOAuthSelector('VK')">VK ID Gate</div>
+            <div class="login-form-wrapper">
+                <label style="font-size:11px; color:var(--color-muted);">Вход через аккаунт Cjax ID:</label>
+                <input type="text" id="form-username" placeholder="Ваш никнейм или логин">
+                <input type="password" id="form-password" placeholder="Пароль">
+                <button onclick="loginWithCredentials()" class="btn-primary">Войти в ядро</button>
+            </div>
+            
+            <div style="margin-top:20px; text-align:center; font-size:11px; color:var(--color-muted);">Или авторизоваться через глобальные ID:</div>
+            
+            <div class="oauth-row">
+                <button onclick="loginViaOAuth('Google')" class="btn-secondary" style="background:#de4032; color:#fff; border:none; font-size:11px; padding:8px 0;">Google</button>
+                <button onclick="loginViaOAuth('Yandex')" class="btn-secondary" style="background:#fc3f1d; color:#fff; border:none; font-size:11px; padding:8px 0;">Яндекс</button>
+                <button onclick="loginViaOAuth('VK')" class="btn-secondary" style="background:#0077ff; color:#fff; border:none; font-size:11px; padding:8px 0;">ВКонтакте</button>
             </div>
         `;
     }
 }
 
-function openOAuthSelector(provider) {
-    selectedProvider = provider;
-    document.getElementById('user-gate').style.display = 'none';
+function loginWithCredentials() {
+    const user = document.getElementById('form-username').value.trim();
+    const pass = document.getElementById('form-password').value.trim();
+    if(!user || !pass) { alert('Введите данные для авторизации!'); return; }
     
-    const screen = document.getElementById('oauth-selector-screen');
-    const title = document.getElementById('oauth-screen-title');
-    const container = document.getElementById('oauth-profiles-container');
-    
-    title.innerText = `Вход через аккаунт ${provider}`;
-    screen.style.display = 'flex';
-    container.innerHTML = '';
-    
-    mockAccounts[provider].forEach(account => {
-        container.innerHTML += `
-            <div class="oauth-account-item" onclick="selectProfile('${account.name}', '${account.email}')">
-                <div class="oauth-avatar-circle">${account.name[0]}</div>
-                <div class="oauth-details">
-                    <span class="oauth-name">${account.name}</span>
-                    <span class="oauth-email">${account.email}</span>
-                </div>
-            </div>
-        `;
-    });
-}
-
-function closeOAuthScreen() {
-    document.getElementById('oauth-selector-screen').style.display = 'none';
-    document.getElementById('user-gate').style.display = 'flex';
-}
-
-function selectProfile(name, email) {
-    currentUser = { name: name, email: email, provider: selectedProvider };
-    localStorage.setItem('sjax_logged_user', JSON.stringify(currentUser));
-    
-    document.getElementById('oauth-selector-screen').style.display = 'none';
+    currentUser = { name: user, provider: "Cjax ID Credentials" };
+    localStorage.setItem('cjax_user_session', JSON.stringify(currentUser));
     updateUserInterface();
     toggleUserModal();
 }
 
+function loginViaOAuth(provider) {
+    const userRealName = prompt(`[OAuth API ${provider}] Введите ваше имя для авторизации профиля:`, "Игорь Алексеевич");
+    if(userRealName && userRealName.trim() !== "") {
+        currentUser = { name: userRealName.trim(), provider: `${provider} Secure API` };
+        localStorage.setItem('cjax_user_session', JSON.stringify(currentUser));
+        updateUserInterface();
+        toggleUserModal();
+    }
+}
+
 function logoutUser() {
     currentUser = null;
-    localStorage.removeItem('sjax_logged_user');
+    localStorage.removeItem('cjax_user_session');
     updateUserInterface();
-    renderUserModalContent();
-    setTimeout(() => toggleUserModal(), 400);
+    toggleUserModal();
 }
 
 function updateUserInterface() {
     const badge = document.getElementById('user-badge');
     if (currentUser) {
-        badge.innerText = `Профиль`;
+        badge.innerText = `Личный кабинет`;
         badge.style.borderColor = "var(--color-glow)";
     } else {
         badge.innerText = "Войти";
