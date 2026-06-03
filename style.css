@@ -1,226 +1,370 @@
-/**
- * Core Front-End Engine v2.6
- * Модуль интернационализации, обработки транзакций СУБД и аутентификации.
- */
-
-const i18n = {
-    ru: {
-        headline: "Разработка высокотехнологичного программного обеспечения<br><span class='purple-gradient'>и оптимизация бизнес-процессов</span>",
-        subline: "Проектирование отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация инфраструктуры на базе Linux систем.",
-        tenderT: "Подать тендерную заявку / Техническое задание",
-        tenderD: "Заполните форму для регистрации проекта в системе обработки заявок. Данные будут сохранены в распределенном хранилище.",
-        tenderB: "Зарегистрировать ТЗ",
-        stackH: "Используемый стек технологий",
-        legalH: "Раскрытие информации и официальные реквизиты"
-    },
-    en: {
-        headline: "High-Tech Software Development<br><span class='purple-gradient'>and Business Process Optimization</span>",
-        subline: "Engineering fault-tolerant architectures, ensuring information security, and automating infrastructure based on Linux environments.",
-        tenderT: "Submit Tender Proposal / Technical Specification",
-        tenderD: "Fill out the form to register your project in the processing system. Data will be saved in persistent storage.",
-        tenderB: "Register Spec",
-        stackH: "Tech Stack Utilization",
-        legalH: "Corporate Transparency & Official Requisites"
-    },
-    de: {
-        headline: "High-Tech Softwareentwicklung<br><span class='purple-gradient'>und Geschäftsprozessoptimierung</span>",
-        subline: "Entwicklung fehlertoleranter Architekturen, Gewährleistung der Informationssicherheit und Automatisierung der Infrastruktur auf Basis von Linux-Systemen.",
-        tenderT: "Ausschreibung einreichen / Lastenheft",
-        tenderD: "Füllen Sie das Formular aus, um das Projekt im Verarbeitungssystem zu registrieren. Die Daten werden im persistenten Speicher gesichert.",
-        tenderB: "Spezifikation registrieren",
-        stackH: "Technologiestapel",
-        legalH: "Offenlegung von Informationen und offizielle Requisiten"
-    }
-};
-
-let currentUser = JSON.parse(localStorage.getItem('sjax_logged_user')) || null;
-
-function setLang(lang) {
-    document.querySelectorAll('.lang-selector button').forEach(b => b.classList.remove('active-lang'));
-    document.getElementById(`lang-${lang}`).classList.add('active-lang');
-
-    const customH = localStorage.getItem('sjax_custom_headline');
-    document.getElementById('main-headline').innerHTML = (lang === 'ru' && customH) ? customH : i18n[lang].headline;
-    
-    document.getElementById('main-subline').innerText = i18n[lang].subline;
-    document.getElementById('tender-title').innerText = i18n[lang].tenderT;
-    document.getElementById('tender-desc').innerText = i18n[lang].tenderD;
-    document.getElementById('tender-btn').innerText = i18n[lang].tenderB;
-    document.getElementById('stack-headline').innerText = i18n[lang].stackH;
-    document.getElementById('legal-title').innerText = i18n[lang].legalH;
+:root {
+    --bg-main: #0a0813;
+    --bg-card: rgba(255, 255, 255, 0.03);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --primary: #8b5cf6;
+    --highlight: #d946ef;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
 }
 
-window.onload = function() {
-    if(localStorage.getItem('sjax_custom_headline')) {
-        document.getElementById('main-headline').innerHTML = localStorage.getItem('sjax_custom_headline');
-    }
-    const savedAvatar = localStorage.getItem('sjax_custom_avatar') || "https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png";
-    document.getElementById('ceo-avatar').src = savedAvatar;
-
-    updateUserInterface();
-    renderUserTenders();
-};
-
-/* --- МОДУЛЬ ТЕНДЕРНЫХ ЗАЯВОК (ПЕРСИСТЕНТНОЕ ХРАНИЛИЩЕ) --- */
-
-function submitTenderToDB() {
-    const company = document.getElementById('client-company').value.trim();
-    const email = document.getElementById('client-email').value.trim();
-    const keywords = document.getElementById('tender-keywords').value.trim();
-    const output = document.getElementById('tender-result');
-
-    if (!company || !email || !keywords) {
-        output.style.display = "block";
-        output.innerHTML = `<span style="color: #ef4444;">[DB ERROR] Ошибка валидации схемы. Заполните все обязательные поля.</span>`;
-        return;
-    }
-
-    const tenderId = "S_IDX_" + Math.floor(Math.random() * 900000 + 100000);
-    const newTender = {
-        id: tenderId,
-        company: company,
-        email: email,
-        keywords: keywords,
-        date: new Date().toLocaleString(),
-        user: currentUser ? currentUser.name : "Анонимный источник"
-    };
-
-    let db = JSON.parse(localStorage.getItem('sjax_global_database')) || [];
-    db.push(newTender);
-    localStorage.setItem('sjax_global_database', JSON.stringify(db));
-
-    output.style.display = "block";
-    output.innerHTML = `
-        <span style="color: #22c55e;">[TRANSACTION SUCCESS] Запись успешно добавлена в стек хранения.</span><br>
-        <strong>UID транзакции:</strong> ${tenderId}<br>
-        <span style="color: var(--p-highlight);">Логи синхронизированы с панелью мониторинга руководителя.</span>
-    `;
-
-    document.getElementById('client-company').value = '';
-    document.getElementById('client-email').value = '';
-    document.getElementById('tender-keywords').value = '';
-    renderUserTenders();
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-function renderUserTenders() {
-    const box = document.getElementById('my-tenders-box');
-    const container = document.getElementById('tenders-container');
-    let db = JSON.parse(localStorage.getItem('sjax_global_database')) || [];
-
-    if (db.length === 0) {
-        box.style.display = "none";
-        return;
-    }
-
-    box.style.display = "block";
-    container.innerHTML = "";
-    
-    db.reverse().forEach(item => {
-        container.innerHTML += `
-            <div class="db-tender-item">
-                <span style="color: #22c55e;">[${item.date}]</span> 
-                <strong>${item.id}</strong> — Организация: <em>${item.company}</em> (Регистратор: ${item.user}): <br>
-                <span>Спецификация требований: ${item.keywords}</span>
-            </div>
-        `;
-    });
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    line-height: 1.5;
 }
 
-/* --- МОДУЛЬ ИМИТАЦИИ OAUTH ПРОДЛЕНИЯ СЕССИЙ --- */
-
-function toggleUserModal() {
-    const modal = document.getElementById('user-gate');
-    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
-    if(modal.style.display === 'flex') renderUserModalContent();
+.main-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
 }
 
-function renderUserModalContent() {
-    const body = document.getElementById('user-modal-body');
-    if (currentUser) {
-        body.innerHTML = `
-            <p class="terminal-success">[AUTHORIZED] Авторизация действительна.</p>
-            <p class="terminal-text" style="color:#fff; margin-top:10px;">
-                Идентификатор: <strong>${currentUser.name}</strong><br>
-                Протокол авторизации: <span style="color:var(--p-highlight);">${currentUser.provider.toUpperCase()} API OAuth2</span>
-            </p>
-            <button onclick="logoutUser()" class="terminal-btn" style="background:#ef4444; margin-top:20px;">Завершить сессию (Exit)</button>
-        `;
-    } else {
-        body.innerHTML = `
-            <p class="terminal-text">system_core: # select_oauth_provider</p>
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Выберите внешнего провайдера для привязки тендерных логов к вашему профилю:</p>
-            <div class="oauth-container">
-                <div class="social-btn btn-google" onclick="simulateOAuth('Google', 'Заказчик (Google ID)')">Интеграция через Google ID</div>
-                <div class="social-btn btn-yandex" onclick="simulateOAuth('Yandex', 'Представитель (Yandex ID)')">Интеграция через Яндекс ID</div>
-                <div class="social-btn btn-vk" onclick="simulateOAuth('VK', 'Пользователь (VK Connect)')">Интеграция через VK ID</div>
-            </div>
-        `;
-    }
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
 }
 
-function simulateOAuth(provider, mockName) {
-    currentUser = { name: mockName, provider: provider };
-    localStorage.setItem('sjax_logged_user', JSON.stringify(currentUser));
-    updateUserInterface();
-    renderUserModalContent();
-    setTimeout(() => toggleUserModal(), 1000);
+/* Навигация */
+.navigation-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(10, 8, 19, 0.8);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
-function logoutUser() {
-    currentUser = null;
-    localStorage.removeItem('sjax_logged_user');
-    updateUserInterface();
-    renderUserModalContent();
-    setTimeout(() => toggleUserModal(), 800);
+.logo {
+    font-size: 20px;
+    font-weight: 700;
 }
 
-function updateUserInterface() {
-    const navText = document.getElementById('user-nav-name');
-    if (currentUser) {
-        navText.innerText = `${currentUser.name}`;
-        navText.style.color = "var(--p-highlight)";
-    } else {
-        navText.innerText = "Войти в систему";
-        navText.style.color = "#fff";
-    }
+.logo-dot {
+    color: var(--highlight);
 }
 
-/* --- КОНСОЛЬ АДМИНИСТРАТОРА (ГЕНДИРЕКТОР БЕЖИН И. А.) --- */
-
-function openAdminModal() { document.getElementById('secure-gate').style.display = 'flex'; }
-function closeAdminModal() { document.getElementById('secure-gate').style.display = 'none'; }
-
-function tryGateAccess() {
-    const inputPass = document.getElementById('gate-pass').value;
-    if(inputPass === 'sudo_rm_rf_sidjacks') {
-        document.getElementById('auth-zone').style.display = 'none';
-        document.getElementById('control-zone').style.display = 'block';
-        document.getElementById('input-headline').value = document.getElementById('main-headline').innerText;
-        document.getElementById('input-avatar').value = document.getElementById('ceo-avatar').src;
-    } else {
-        alert('ACCESS DENIED. Нарушение прав доступа.');
-    }
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-function selectPresetAvatar(url) {
-    document.getElementById('input-avatar').value = url;
+.lang-selector button {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
 }
 
-function commitDevChanges() {
-    const nextHeadline = document.getElementById('input-headline').value;
-    const nextAvatar = document.getElementById('input-avatar').value;
-    
-    localStorage.setItem('sjax_custom_headline', nextHeadline);
-    document.getElementById('main-headline').innerHTML = nextHeadline;
-    
-    if(nextAvatar.trim() !== "") {
-        localStorage.setItem('sjax_custom_avatar', nextAvatar);
-        document.getElementById('ceo-avatar').src = nextAvatar;
-    }
-    
-    const log = document.getElementById('console-log');
-    log.style.color = "#22c55e";
-    log.innerText = ">>> Матрица конфигурации обновлена успешно.";
-    
-    setTimeout(() => { log.innerText = ""; closeAdminModal(); }, 1200);
+.lang-selector button.active-lang, .lang-selector button:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+.user-badge-header {
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.control-gear {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* Hero блок с компактным аватаром */
+.hero-section {
+    padding: 40px 0;
+    text-align: center;
+}
+
+.ceo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 8px 16px;
+    border-radius: 30px;
+    margin-bottom: 20px;
+}
+
+.avatar-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+#ceo-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.online-pulse {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+}
+
+.ceo-info {
+    text-align: left;
+}
+
+.ceo-title {
+    display: block;
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.ceo-name {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.hero-section h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 16px;
+}
+
+.purple-gradient {
+    background: linear-gradient(to right, #fff, var(--highlight));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-section p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Формы и ТЗ */
+.form-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.form-row input {
+    flex: 1;
+    padding: 12px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+}
+
+.form-row button, .action-btn {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.tender-output {
+    margin-top: 16px;
+    padding: 16px;
+    background: rgba(0,0,0,0.3);
+    border-left: 3px solid var(--highlight);
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.db-tender-item {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+}
+
+/* Стек в виде тегов (Строгий аккуратный вид вместо огромной сетки) */
+.matrix-stack h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.stack-flex {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.stack-tag {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+}
+
+/* Реквизиты */
+.legal-board h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+}
+
+.legal-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.legal-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+    padding-bottom: 6px;
+}
+
+.legal-row span {
+    color: var(--text-muted);
+}
+
+/* Модалки */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.terminal-box {
+    width: 100%;
+    max-width: 480px;
+    background: #0f0d1a;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.terminal-header {
+    background: rgba(255,255,255,0.03);
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.terminal-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.close-gate {
+    cursor: pointer;
+}
+
+.terminal-body {
+    padding: 20px;
+}
+
+.status-text {
+    font-family: 'JetBrains Mono', monospace;
+    color: #22c55e;
+    margin-bottom: 12px;
+}
+
+.control-form label {
+    display: block;
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.control-form input, #gate-pass {
+    width: 100%;
+    padding: 10px;
+    background: #05040a;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: #fff;
+    margin-top: 4px;
+}
+
+.oauth-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.social-btn {
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.btn-google { background: #de4032; }
+.btn-yandex { background: #fc3f1d; }
+.btn-vk { background: #0077ff; }
+
+.avatar-presets {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.preset-preview {
+    width: 50px;
+    height: 50px;
+    border-radius: 6px;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 600px) {
+    .navigation-bar { padding: 12px 16px; }
+    .hero-section h1 { font-size: 1.6rem; }
+    .form-row { flex-direction: column; gap: 8px; }
+    .legal-row { flex-direction: column; align-items: flex-start; gap: 2px; }
+    .main-wrapper { padding: 12px; }
 }
