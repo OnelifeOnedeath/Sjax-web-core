@@ -3,141 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ООО «Сиджакс»</title>
+    <title>ООО «Сиджакс» — Разработка ПО</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <header class="navigation-bar">
-        <div class="logo">Sjax<span class="logo-dot">.</span>core</div>
-        <nav class="nav-controls">
-            <div class="lang-selector">
+    <header class="nav-container">
+        <div class="logo">Sjax<span class="dot">.</span>core</div>
+        <div class="nav-right">
+            <div class="lang-box">
                 <button onclick="setLang('ru')" id="lang-ru" class="active-lang">RU</button>
                 <button onclick="setLang('en')" id="lang-en">EN</button>
                 <button onclick="setLang('de')" id="lang-de">DE</button>
             </div>
-            <div id="user-profile-zone" class="user-badge-header" onclick="toggleUserModal()">
-                <span id="user-nav-name">Войти</span>
-            </div>
-            <button class="control-gear" onclick="openAdminModal()">⚙️</button>
-        </nav>
+            <button id="user-badge" class="btn-secondary" onclick="toggleUserModal()">Войти</button>
+            <button class="btn-icon" onclick="openAdminModal()">⚙️</button>
+        </div>
     </header>
 
-    <main class="main-wrapper">
+    <main class="layout-wrapper">
         
-        <section class="hero-section">
-            <div class="ceo-badge">
-                <div class="avatar-container">
-                    <img id="ceo-avatar" src="https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png" alt="CEO">
-                    <div class="online-pulse"></div>
+        <section class="hero-block">
+            <div class="profile-card">
+                <div class="avatar-wrapper">
+                    <img id="ceo-avatar" src="https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png" alt="Бежин И. А.">
+                    <span class="status-indicator"></span>
                 </div>
-                <div class="ceo-info">
-                    <span class="ceo-title">Генеральный директор / Главный архитектор</span>
-                    <span class="ceo-name">Бежин И. А.</span>
+                <div class="profile-meta">
+                    <span class="role">Генеральный директор / Главный архитектор</span>
+                    <span class="name">Бежин И. А.</span>
                 </div>
             </div>
             
-            <h1 id="main-headline">Разработка высокотехнологичного ПО<br><span class="purple-gradient">и проектирование систем</span></h1>
-            <p id="main-subline">Создание отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация инфраструктуры.</p>
+            <h1 id="main-headline">Разработка высокотехнологичного ПО<br><span class="gradient-text">и проектирование систем</span></h1>
+            <p id="main-subline">Проектирование отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация распределенной инфраструктуры.</p>
         </section>
 
-        <section class="tender-constructor card">
-            <div class="section-header">
-                <h2 id="tender-title">Регистрация тендерных заявок</h2>
-                <p id="tender-desc">Внесите данные технического задания для фиксации в распределенной системе обработки заявок.</p>
+        <section class="console-section">
+            <div class="panel-header">
+                <div class="window-controls"><span></span><span></span><span></span></div>
+                <h2 id="tender-title" class="panel-title">Регистрация тендерных заявок</h2>
             </div>
-            <div class="tender-form">
-                <div class="form-row">
-                    <input type="text" id="client-company" placeholder="Организация">
-                    <input type="email" id="client-email" placeholder="Email для связи">
+            <div class="panel-body">
+                <p id="tender-desc" class="panel-hint">Внесите параметры технического задания для фиксации в распределенном стеке обработки.</p>
+                
+                <div class="form-grid">
+                    <input type="text" id="client-company" placeholder="Наименование организации">
+                    <input type="email" id="client-email" placeholder="Контактный Email">
                 </div>
-                <div class="form-row">
-                    <input type="text" id="tender-keywords" placeholder="Ключевые требования (например: СУБД, высокая нагрузка)">
-                    <button onclick="submitTenderToDB()" id="tender-btn">Отправить ТЗ</button>
+                <div class="form-action-group">
+                    <input type="text" id="tender-keywords" placeholder="Ключевые требования (например: высокая нагрузка, СУБД, Linux)">
+                    <button onclick="submitTenderToDB()" id="tender-btn" class="btn-primary">Отправить ТЗ</button>
                 </div>
-                <div id="tender-result" class="tender-output" style="display: none;"></div>
+                
+                <div id="tender-result" class="log-box success-msg" style="display: none;"></div>
+
+                <div class="direct-contacts-zone">
+                    <span class="or-divider">Или свяжитесь напрямую без оформления заявки:</span>
+                    <div class="contacts-row">
+                        <a href="mailto:igorb9475@gmail.com" class="contact-link">✉️ Написать: igorb9475@gmail.com</a>
+                        <a href="tel:89872209843" class="contact-link">📞 Позвонить: 89872209843</a>
+                    </div>
+                </div>
             </div>
 
-            <div class="user-tenders-list" id="my-tenders-box" style="display:none;">
-                <h3>Лог зарегистрированных заявок:</h3>
+            <div class="db-logs-area" id="my-tenders-box" style="display:none;">
+                <div class="logs-header">Лог локальных транзакций в СУБД:</div>
                 <div id="tenders-container"></div>
             </div>
         </section>
 
-        <section class="matrix-stack">
-            <h2 id="stack-headline">Технологический стек</h2>
-            <div class="stack-flex">
-                <div class="stack-tag">Linux Core</div>
-                <div class="stack-tag">Arch Linux</div>
-                <div class="stack-tag">Ubuntu Server</div>
-                <div class="stack-tag">C++</div>
-                <div class="stack-tag">C#</div>
-                <div class="stack-tag">Python</div>
-                <div class="stack-tag">Kotlin</div>
-                <div class="stack-tag">Go</div>
-                <div class="stack-tag">Lua</div>
-                <div class="stack-tag">TypeScript</div>
-                <div class="stack-tag">Node.js</div>
-                <div class="stack-tag">Docker</div>
-                <div class="stack-tag">PostgreSQL</div>
+        <section class="tech-section">
+            <h2 id="stack-headline">Используемый технологический стек</h2>
+            <div class="tags-grid">
+                <div class="tag"><i class="devicon-linux-plain"></i> Linux Core</div>
+                <div class="tag"><i class="devicon-archlinux-plain"></i> Arch Linux</div>
+                <div class="tag"><i class="devicon-ubuntu-plain"></i> Ubuntu Server</div>
+                <div class="tag"><i class="devicon-cplusplus-plain"></i> C++</div>
+                <div class="tag"><i class="devicon-csharp-plain"></i> C#</div>
+                <div class="tag"><i class="devicon-python-plain"></i> Python</div>
+                <div class="tag"><i class="devicon-kotlin-plain"></i> Kotlin</div>
+                <div class="tag"><i class="devicon-go-original-wordmark"></i> Go</div>
+                <div class="tag"><i class="devicon-lua-plain"></i> Lua</div>
+                <div class="tag"><i class="devicon-typescript-plain"></i> TypeScript</div>
+                <div class="tag"><i class="devicon-nodejs-plain"></i> Node.js</div>
+                <div class="tag"><i class="devicon-docker-plain"></i> Docker</div>
+                <div class="tag"><i class="devicon-postgresql-plain"></i> PostgreSQL</div>
             </div>
         </section>
 
-        <section class="legal-board card">
-            <h2 id="legal-title">Реквизиты организации</h2>
-            <div class="legal-grid">
-                <div class="legal-row"><span>Наименование</span><strong>ООО "Сиджакс"</strong></div>
-                <div class="legal-row"><span>Директор</span><strong>Бежин Игорь Алексеевич</strong></div>
-                <div class="legal-row"><span>Адрес</span><strong>г Санкт-Петербург, ул Вербная, д 27</strong></div>
-                <div class="legal-row"><span>ИНН / КПП</span><strong>7814863792 / 781401001</strong></div>
-                <div class="legal-row"><span>ОГРН</span><strong>1267800038098</strong></div>
-                <div class="legal-row"><span>ОКВЭД</span><strong>62.01 (Разработка ПО)</strong></div>
+        <section class="legal-section">
+            <h2 id="legal-title">Раскрытие информации / Реквизиты</h2>
+            <div class="legal-table">
+                <div class="table-row"><span>Организация</span><strong>ООО "Сиджакс"</strong></div>
+                <div class="table-row"><span>Генеральный директор</span><strong>Бежин Игорь Алексеевич</strong></div>
+                <div class="table-row"><span>Юридический адрес</span><strong>г Санкт-Петербург, ул Вербная, д 27</strong></div>
+                <div class="table-row"><span>ИНН / КПП</span><strong>7814863792 / 781401001</strong></div>
+                <div class="table-row"><span>ОГРН</span><strong>1267800038098</strong></div>
+                <div class="table-row"><span>ОКВЭД основной</span><strong>62.01 (Разработка компьютерного ПО)</strong></div>
             </div>
         </section>
     </main>
 
-    <div id="user-gate" class="modal-overlay">
-        <div class="terminal-box">
-            <div class="terminal-header">
-                <span class="terminal-title">auth_service_v2.6</span>
-                <span class="close-gate" onclick="toggleUserModal()">&times;</span>
+    <div id="user-gate" class="modal-backdrop" style="display: none;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span class="modal-title">auth_manager_v2.6</span>
+                <span class="modal-close" onclick="toggleUserModal()">&times;</span>
             </div>
-            <div class="terminal-body" id="user-modal-body"></div>
+            <div class="modal-body" id="user-modal-body"></div>
         </div>
     </div>
 
-    <div id="secure-gate" class="modal-overlay">
-        <div class="terminal-box">
-            <div class="terminal-header">
-                <span class="terminal-title">sjax@admin-panel:~</span>
-                <span class="close-gate" onclick="closeAdminModal()">&times;</span>
+    <div id="oauth-selector-screen" class="modal-backdrop" style="display: none;">
+        <div class="modal-box oauth-picker-box">
+            <div class="modal-header">
+                <span id="oauth-screen-title" class="modal-title">Выбор аккаунта</span>
+                <span class="modal-close" onclick="closeOAuthScreen()">&times;</span>
             </div>
-            <div class="terminal-body">
+            <div class="modal-body" id="oauth-profiles-container"></div>
+        </div>
+    </div>
+
+    <div id="secure-gate" class="modal-backdrop" style="display: none;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span class="modal-title">sjax@admin-terminal:~</span>
+                <span class="modal-close" onclick="closeAdminModal()">&times;</span>
+            </div>
+            <div class="modal-body">
                 <div id="auth-zone">
-                    <p class="status-text">root@sjax-core: # enter_security_key</p>
+                    <p class="console-text"># enter_security_key</p>
                     <input type="password" id="gate-pass" placeholder="••••••••••••" autofocus>
-                    <button onclick="tryGateAccess()" class="action-btn">Execute</button>
+                    <button onclick="tryGateAccess()" class="btn-primary terminal-enter-btn">Execute</button>
                 </div>
                 <div id="control-zone" style="display: none;">
-                    <p class="status-success">[SUCCESS] Сессия администратора активна.</p>
-                    <div class="control-form">
-                        <label>Редактировать главный слоган:</label>
+                    <p class="console-success">[OK] Доступ к ядру конфигурации предоставлен.</p>
+                    <div class="admin-fields">
+                        <label>Редактирование слогана:</label>
                         <input type="text" id="input-headline">
                         
-                        <label>Выбрать аватар:</label>
-                        <div class="avatar-presets">
-                            <img src="https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png" onclick="selectPresetAvatar(this.src)" class="preset-preview">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQONA4VPnuC95FvhA2BJG3ruIGgyJa0oaiVJg&s" onclick="selectPresetAvatar(this.src)" class="preset-preview">
-                            <img src="https://pbs.twimg.com/media/EpnN1Y5W4AA3xWv?format=jpg&name=small" onclick="selectPresetAvatar(this.src)" class="preset-preview">
+                        <label>Предустановленные аватары:</label>
+                        <div class="avatar-selector">
+                            <img src="https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png" onclick="selectPresetAvatar(this.src)">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQONA4VPnuC95FvhA2BJG3ruIGgyJa0oaiVJg&s" alt="Preset 2">
+                            <img src="https://pbs.twimg.com/media/EpnN1Y5W4AA3xWv?format=jpg&name=small" alt="Preset 3">
                         </div>
 
-                        <label>Или кастомный URL изображения:</label>
+                        <label>Кастомный URL аватара:</label>
                         <input type="text" id="input-avatar" placeholder="https://...">
                         
-                        <button onclick="commitDevChanges()" class="action-btn">Commit Changes</button>
+                        <button onclick="commitDevChanges()" class="btn-primary save-btn">Commit Changes</button>
+                        <button onclick="revokeAdminAccess()" class="btn-secondary logout-admin-btn" style="margin-top: 8px; width: 100%; color: #ef4444; border-color: rgba(239,68,68,0.3)">Сбросить токен админа на этом ПК</button>
                         <p id="console-log"></p>
                     </div>
                 </div>
