@@ -1,6 +1,5 @@
 /**
- * Скрипт подсистемы управления ООО "Сиджакс"
- * Локализация ресурсов, стек персистентного хранения и OAuth2 эмуляция.
+ * Скриптная система Cjax Core v2.6
  */
 
 const i18n = {
@@ -23,7 +22,7 @@ const i18n = {
         legalH: "Corporate Transparency & Specifications"
     },
     de: {
-        headline: "High-Tech Softwareentwicklung<br><span class='gradient-text'>und Systemdesign</span>",
+        headline: "High-Tech Softwareentwicklung<br><span class='gradient-text'>and Systemdesign</span>",
         subline: "Entwicklung fehlertoleranter Architektursysteme, Gewährleistung der Informationssicherheit und Automatisierung verteilter Infrastrukturen.",
         tenderT: "Registrierung von Projektausschreibungen",
         tenderD: "Übermitteln Sie die Parameter des Lastenhefts zur Erfassung im zentralen Verarbeitungssystem.",
@@ -33,7 +32,6 @@ const i18n = {
     }
 };
 
-// Базы моковых аккаунтов для реалистичного выбора профиля
 const mockAccounts = {
     Google: [
         { name: "Игорь Бежин", email: "igorb9475@gmail.com" },
@@ -78,6 +76,77 @@ window.onload = function() {
     renderUserTenders();
 };
 
+/* Скрытый Вызов Терминала Управления по Горячим Клавишам (Ctrl + Alt + A) */
+window.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.altKey && e.code === 'KeyA') {
+        e.preventDefault();
+        openAdminModal();
+    }
+});
+
+function openAdminModal() {
+    document.getElementById('secure-gate').style.display = 'flex';
+    
+    if (localStorage.getItem('sjax_admin_authenticated') === 'true') {
+        document.getElementById('auth-zone').style.display = 'none';
+        document.getElementById('control-zone').style.display = 'block';
+        loadAdminFormValues();
+    } else {
+        document.getElementById('auth-zone').style.display = 'block';
+        document.getElementById('control-zone').style.display = 'none';
+    }
+}
+
+function closeAdminModal() { document.getElementById('secure-gate').style.display = 'none'; }
+
+function tryGateAccess() {
+    const inputPass = document.getElementById('gate-pass').value;
+    if(inputPass === 'sudo_rm_rf_sidjacks') {
+        localStorage.setItem('sjax_admin_authenticated', 'true');
+        document.getElementById('auth-zone').style.display = 'none';
+        document.getElementById('control-zone').style.display = 'block';
+        loadAdminFormValues();
+    } else {
+        alert('Ошибка дешифрации ключа. Отказано.');
+    }
+}
+
+function loadAdminFormValues() {
+    document.getElementById('input-headline').value = document.getElementById('main-headline').innerText;
+    document.getElementById('input-avatar').value = document.getElementById('ceo-avatar').src;
+}
+
+function selectPresetAvatar(url) {
+    document.getElementById('input-avatar').value = url;
+}
+
+function commitDevChanges() {
+    const nextHeadline = document.getElementById('input-headline').value;
+    const nextAvatar = document.getElementById('input-avatar').value;
+    
+    localStorage.setItem('sjax_custom_headline', nextHeadline);
+    document.getElementById('main-headline').innerHTML = nextHeadline;
+    
+    if(nextAvatar.trim() !== "") {
+        localStorage.setItem('sjax_custom_avatar', nextAvatar);
+        document.getElementById('ceo-avatar').src = nextAvatar;
+    }
+    
+    const log = document.getElementById('console-log');
+    log.style.color = "#22c55e";
+    log.innerText = ">>> Системные параметры переконфигурированы.";
+    
+    setTimeout(() => { log.innerText = ""; closeAdminModal(); }, 1000);
+}
+
+function revokeAdminAccess() {
+    localStorage.removeItem('sjax_admin_authenticated');
+    document.getElementById('gate-pass').value = '';
+    document.getElementById('control-zone').style.display = 'none';
+    document.getElementById('auth-zone').style.display = 'block';
+    closeAdminModal();
+}
+
 /* Модуль обработки данных ТЗ */
 function submitTenderToDB() {
     const company = document.getElementById('client-company').value.trim();
@@ -93,7 +162,7 @@ function submitTenderToDB() {
         return;
     }
 
-    const tenderId = "S_IDX_" + Math.floor(Math.random() * 900000 + 100000);
+    const tenderId = "C_JX_" + Math.floor(Math.random() * 900000 + 100000);
     const newTender = {
         id: tenderId,
         company: company,
@@ -141,7 +210,7 @@ function renderUserTenders() {
     });
 }
 
-/* Модуль интерфейса сессий и интерактивного OAuth */
+/* Полноценная сессия пользователей */
 function toggleUserModal() {
     const modal = document.getElementById('user-gate');
     modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
@@ -169,7 +238,6 @@ function renderUserModalContent() {
     }
 }
 
-// Открытие интерактивного экрана со списками аккаунтов
 function openOAuthSelector(provider) {
     selectedProvider = provider;
     document.getElementById('user-gate').style.display = 'none';
@@ -226,72 +294,4 @@ function updateUserInterface() {
         badge.innerText = "Войти";
         badge.style.borderColor = "var(--color-border)";
     }
-}
-
-/* Админ-панель руководителя (С однократным вводом токена на ПК) */
-function openAdminModal() {
-    document.getElementById('secure-gate').style.display = 'flex';
-    
-    // ПРОВЕРКА: если админ уже авторизовался ранее на этом ПК
-    if (localStorage.getItem('sjax_admin_authenticated') === 'true') {
-        document.getElementById('auth-zone').style.display = 'none';
-        document.getElementById('control-zone').style.display = 'block';
-        loadAdminFormValues();
-    } else {
-        document.getElementById('auth-zone').style.display = 'block';
-        document.getElementById('control-zone').style.display = 'none';
-    }
-}
-
-function closeAdminModal() { document.getElementById('secure-gate').style.display = 'none'; }
-
-function tryGateAccess() {
-    const inputPass = document.getElementById('gate-pass').value;
-    if(inputPass === 'sudo_rm_rf_sidjacks') {
-        // Запоминаем токен на этом ПК насовсем
-        localStorage.setItem('sjax_admin_authenticated', 'true');
-        
-        document.getElementById('auth-zone').style.display = 'none';
-        document.getElementById('control-zone').style.display = 'block';
-        loadAdminFormValues();
-    } else {
-        alert('Ошибка дешифрации ключа. Отказано.');
-    }
-}
-
-function loadAdminFormValues() {
-    document.getElementById('input-headline').value = document.getElementById('main-headline').innerText;
-    document.getElementById('input-avatar').value = document.getElementById('ceo-avatar').src;
-}
-
-function selectPresetAvatar(url) {
-    document.getElementById('input-avatar').value = url;
-}
-
-function commitDevChanges() {
-    const nextHeadline = document.getElementById('input-headline').value;
-    const nextAvatar = document.getElementById('input-avatar').value;
-    
-    localStorage.setItem('sjax_custom_headline', nextHeadline);
-    document.getElementById('main-headline').innerHTML = nextHeadline;
-    
-    if(nextAvatar.trim() !== "") {
-        localStorage.setItem('sjax_custom_avatar', nextAvatar);
-        document.getElementById('ceo-avatar').src = nextAvatar;
-    }
-    
-    const log = document.getElementById('console-log');
-    log.style.color = "#22c55e";
-    log.innerText = ">>> Системные переменные изменены.";
-    
-    setTimeout(() => { log.innerText = ""; closeAdminModal(); }, 1000);
-}
-
-// Кнопка на случай, если захочешь выйти из админки и заблокировать ее обратно
-function revokeAdminAccess() {
-    localStorage.removeItem('sjax_admin_authenticated');
-    document.getElementById('gate-pass').value = '';
-    document.getElementById('control-zone').style.display = 'none';
-    document.getElementById('auth-zone').style.display = 'block';
-    closeAdminModal();
 }
