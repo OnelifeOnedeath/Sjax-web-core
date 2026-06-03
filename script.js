@@ -1,42 +1,59 @@
 /**
- * Скрипт управления функционалом сайта ООО "Сиджакс"
- * Локализация, сохранение заявок в хранилище, симуляция авторизации.
+ * Скрипт подсистемы управления ООО "Сиджакс"
+ * Локализация ресурсов, стек персистентного хранения и OAuth2 эмуляция.
  */
 
 const i18n = {
     ru: {
-        headline: "Разработка высокотехнологичного ПО<br><span class='purple-gradient'>и проектирование систем</span>",
-        subline: "Создание отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация инфраструктуры.",
+        headline: "Разработка высокотехнологичного ПО<br><span class='gradient-text'>и проектирование систем</span>",
+        subline: "Проектирование отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация распределенной инфраструктуры.",
         tenderT: "Регистрация тендерных заявок",
-        tenderD: "Внесите данные технического задания для фиксации в распределенной системе обработки заявок.",
+        tenderD: "Внесите параметры технического задания для фиксации в распределенном стеке обработки.",
         tenderB: "Отправить ТЗ",
-        stackH: "Технологический стек",
-        legalH: "Реквизиты организации"
+        stackH: "Используемый технологический стек",
+        legalH: "Раскрытие информации / Реквизиты"
     },
     en: {
-        headline: "High-Tech Software Development<br><span class='purple-gradient'>and Systems Engineering</span>",
-        subline: "Engineering fault-tolerant architectural solutions, ensuring information security, and infrastructure automation.",
-        tenderT: "Tender Proposals Registration",
-        tenderD: "Enter the technical specification data to commit into the distributed request processing system.",
+        headline: "High-Tech Software Development<br><span class='gradient-text'>and Systems Engineering</span>",
+        subline: "Engineering fault-tolerant architectural systems, information security assurance, and distributed infrastructure automation.",
+        tenderT: "Tender Specifications Registration",
+        tenderD: "Commit your system technical requirements parameters into the core processing queue.",
         tenderB: "Submit Spec",
-        stackH: "Technology Stack",
-        legalH: "Corporate Requisites"
+        stackH: "Core Technology Stack",
+        legalH: "Corporate Transparency & Specifications"
     },
     de: {
-        headline: "High-Tech Softwareentwicklung<br><span class='purple-gradient'>und Systemdesign</span>",
-        subline: "Entwicklung fehlertoleranter Architekturen, Gewährleistung der Informationssicherheit und Infrastrukturautomatisierung.",
-        tenderT: "Registrierung von Ausschreibungen",
-        tenderD: "Geben Sie die Lastenheftdaten ein, um sie im dezentralen Anforderungsverarbeitungssystem zu speichern.",
-        tenderB: "Spezifikation senden",
-        stackH: "Technologiestapel",
-        legalH: "Unternehmensdaten"
+        headline: "High-Tech Softwareentwicklung<br><span class='gradient-text'>und Systemdesign</span>",
+        subline: "Entwicklung fehlertoleranter Architektursysteme, Gewährleistung der Informationssicherheit und Automatisierung verteilter Infrastrukturen.",
+        tenderT: "Registrierung von Projektausschreibungen",
+        tenderD: "Übermitteln Sie die Parameter des Lastenhefts zur Erfassung im zentralen Verarbeitungssystem.",
+        tenderB: "Spezifikation Senden",
+        stackH: "Technologiestapel Kern",
+        legalH: "Offenlegung von Informationen und Requisiten"
     }
 };
 
+// Базы моковых аккаунтов для реалистичного выбора профиля
+const mockAccounts = {
+    Google: [
+        { name: "Игорь Бежин", email: "igorb9475@gmail.com" },
+        { name: "Рахид ИТ", email: "rahid.dev@gmail.com" }
+    ],
+    Yandex: [
+        { name: "Бежин И.А.", email: "i.bezhin@yandex.ru" },
+        { name: "Владимир КИП", email: "vladimir.kip@yandex.ru" }
+    ],
+    VK: [
+        { name: "Игорь Алексеевич", email: "id2074829@vk.com" },
+        { name: "Виктория Арт", email: "vvn.art@vk.com" }
+    ]
+};
+
 let currentUser = JSON.parse(localStorage.getItem('sjax_logged_user')) || null;
+let selectedProvider = "";
 
 function setLang(lang) {
-    document.querySelectorAll('.lang-selector button').forEach(b => b.classList.remove('active-lang'));
+    document.querySelectorAll('.lang-box button').forEach(b => b.classList.remove('active-lang'));
     document.getElementById(`lang-${lang}`).classList.add('active-lang');
 
     const customH = localStorage.getItem('sjax_custom_headline');
@@ -61,7 +78,7 @@ window.onload = function() {
     renderUserTenders();
 };
 
-/* Хранение и рендеринг заявок */
+/* Модуль обработки данных ТЗ */
 function submitTenderToDB() {
     const company = document.getElementById('client-company').value.trim();
     const email = document.getElementById('client-email').value.trim();
@@ -70,7 +87,9 @@ function submitTenderToDB() {
 
     if (!company || !email || !keywords) {
         output.style.display = "block";
-        output.innerHTML = `<span style="color: #ef4444;">[Ошибка] Заполните все поля формы.</span>`;
+        output.style.borderColor = "#ef4444";
+        output.style.color = "#f87171";
+        output.innerHTML = `[ERROR] Ошибка заполнения полей спецификации.`;
         return;
     }
 
@@ -81,7 +100,7 @@ function submitTenderToDB() {
         email: email,
         keywords: keywords,
         date: new Date().toLocaleString(),
-        user: currentUser ? currentUser.name : "Анонимный источник"
+        user: currentUser ? currentUser.name : "Anonymous Link"
     };
 
     let db = JSON.parse(localStorage.getItem('sjax_global_database')) || [];
@@ -89,7 +108,9 @@ function submitTenderToDB() {
     localStorage.setItem('sjax_global_database', JSON.stringify(db));
 
     output.style.display = "block";
-    output.innerHTML = `<span style="color: #22c55e;">[Успешно] Запись зарегистрирована. UID: ${tenderId}</span>`;
+    output.style.borderColor = "rgba(34, 197, 94, 0.2)";
+    output.style.color = "#4ade80";
+    output.innerHTML = `[OK] Заявка закомичена в стек транзакций. ID: ${tenderId}`;
 
     document.getElementById('client-company').value = '';
     document.getElementById('client-email').value = '';
@@ -113,14 +134,14 @@ function renderUserTenders() {
     db.reverse().forEach(item => {
         container.innerHTML += `
             <div class="db-tender-item">
-                [${item.date}] ID: ${item.id} | Организация: ${item.company} (${item.user}) <br>
-                <span>Спецификация: ${item.keywords}</span>
+                <strong>[${item.date}] ${item.id}</strong><br>
+                Организация: ${item.company} | Сигнатура: ${item.keywords} (${item.user})
             </div>
         `;
     });
 }
 
-/* Симуляция подсистемы авторизации */
+/* Модуль интерфейса сессий и интерактивного OAuth */
 function toggleUserModal() {
     const modal = document.getElementById('user-gate');
     modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
@@ -131,28 +152,61 @@ function renderUserModalContent() {
     const body = document.getElementById('user-modal-body');
     if (currentUser) {
         body.innerHTML = `
-            <p class="status-text">[AUTHORIZED] Сессия активна.</p>
-            <p style="font-size:14px; margin-bottom:12px;">Пользователь: <strong>${currentUser.name}</strong></p>
-            <button onclick="logoutUser()" class="action-btn" style="background:#ef4444;">Выйти</button>
+            <p class="console-success">[AUTHORIZED] Токен действителен.</p>
+            <p style="font-size:13px; margin-bottom:16px;">Субъект: <strong>${currentUser.name}</strong></p>
+            <p style="font-size:11px; color:var(--color-muted); margin-bottom:12px;">Провайдер: ${currentUser.provider}</p>
+            <button onclick="logoutUser()" class="btn-primary" style="background:#ef4444; color:#fff;">Завершить сессию</button>
         `;
     } else {
         body.innerHTML = `
-            <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">Выберите внешнюю платформу для аутентификации:</p>
-            <div class="oauth-container">
-                <div class="social-btn btn-google" onclick="simulateOAuth('Google', 'Пользователь Google')">Вход через Google</div>
-                <div class="social-btn btn-yandex" onclick="simulateOAuth('Yandex', 'Пользователь Яндекс')">Вход через Яндекс</div>
-                <div class="social-btn btn-vk" onclick="simulateOAuth('VK', 'Пользователь ВКонтакте')">Вход через VK</div>
+            <p style="font-size:12px; color:var(--color-muted); margin-bottom:12px;">Выберите OAuth2 провайдера для авторизации:</p>
+            <div class="oauth-list">
+                <div class="oauth-btn oa-g" onclick="openOAuthSelector('Google')">Google Workspace ID</div>
+                <div class="oauth-btn oa-y" onclick="openOAuthSelector('Yandex')">Яндекс ID Коннект</div>
+                <div class="oauth-btn oa-v" onclick="openOAuthSelector('VK')">VK ID Gate</div>
             </div>
         `;
     }
 }
 
-function simulateOAuth(provider, mockName) {
-    currentUser = { name: mockName, provider: provider };
+// Открытие интерактивного экрана со списками аккаунтов
+function openOAuthSelector(provider) {
+    selectedProvider = provider;
+    document.getElementById('user-gate').style.display = 'none';
+    
+    const screen = document.getElementById('oauth-selector-screen');
+    const title = document.getElementById('oauth-screen-title');
+    const container = document.getElementById('oauth-profiles-container');
+    
+    title.innerText = `Вход через аккаунт ${provider}`;
+    screen.style.display = 'flex';
+    container.innerHTML = '';
+    
+    mockAccounts[provider].forEach(account => {
+        container.innerHTML += `
+            <div class="oauth-account-item" onclick="selectProfile('${account.name}', '${account.email}')">
+                <div class="oauth-avatar-circle">${account.name[0]}</div>
+                <div class="oauth-details">
+                    <span class="oauth-name">${account.name}</span>
+                    <span class="oauth-email">${account.email}</span>
+                </div>
+            </div>
+        `;
+    });
+}
+
+function closeOAuthScreen() {
+    document.getElementById('oauth-selector-screen').style.display = 'none';
+    document.getElementById('user-gate').style.display = 'flex';
+}
+
+function selectProfile(name, email) {
+    currentUser = { name: name, email: email, provider: selectedProvider };
     localStorage.setItem('sjax_logged_user', JSON.stringify(currentUser));
+    
+    document.getElementById('oauth-selector-screen').style.display = 'none';
     updateUserInterface();
-    renderUserModalContent();
-    setTimeout(() => toggleUserModal(), 800);
+    toggleUserModal();
 }
 
 function logoutUser() {
@@ -160,34 +214,54 @@ function logoutUser() {
     localStorage.removeItem('sjax_logged_user');
     updateUserInterface();
     renderUserModalContent();
-    setTimeout(() => toggleUserModal(), 600);
+    setTimeout(() => toggleUserModal(), 400);
 }
 
 function updateUserInterface() {
-    const navText = document.getElementById('user-nav-name');
+    const badge = document.getElementById('user-badge');
     if (currentUser) {
-        navText.innerText = `Профиль (${currentUser.provider})`;
-        navText.style.color = "var(--highlight)";
+        badge.innerText = `Профиль`;
+        badge.style.borderColor = "var(--color-glow)";
     } else {
-        navText.innerText = "Войти";
-        navText.style.color = "#fff";
+        badge.innerText = "Войти";
+        badge.style.borderColor = "var(--color-border)";
     }
 }
 
-/* Консоль администратора */
-function openAdminModal() { document.getElementById('secure-gate').style.display = 'flex'; }
+/* Админ-панель руководителя (С однократным вводом токена на ПК) */
+function openAdminModal() {
+    document.getElementById('secure-gate').style.display = 'flex';
+    
+    // ПРОВЕРКА: если админ уже авторизовался ранее на этом ПК
+    if (localStorage.getItem('sjax_admin_authenticated') === 'true') {
+        document.getElementById('auth-zone').style.display = 'none';
+        document.getElementById('control-zone').style.display = 'block';
+        loadAdminFormValues();
+    } else {
+        document.getElementById('auth-zone').style.display = 'block';
+        document.getElementById('control-zone').style.display = 'none';
+    }
+}
+
 function closeAdminModal() { document.getElementById('secure-gate').style.display = 'none'; }
 
 function tryGateAccess() {
     const inputPass = document.getElementById('gate-pass').value;
     if(inputPass === 'sudo_rm_rf_sidjacks') {
+        // Запоминаем токен на этом ПК насовсем
+        localStorage.setItem('sjax_admin_authenticated', 'true');
+        
         document.getElementById('auth-zone').style.display = 'none';
         document.getElementById('control-zone').style.display = 'block';
-        document.getElementById('input-headline').value = document.getElementById('main-headline').innerText;
-        document.getElementById('input-avatar').value = document.getElementById('ceo-avatar').src;
+        loadAdminFormValues();
     } else {
-        alert('Ошибка доступа.');
+        alert('Ошибка дешифрации ключа. Отказано.');
     }
+}
+
+function loadAdminFormValues() {
+    document.getElementById('input-headline').value = document.getElementById('main-headline').innerText;
+    document.getElementById('input-avatar').value = document.getElementById('ceo-avatar').src;
 }
 
 function selectPresetAvatar(url) {
@@ -208,7 +282,16 @@ function commitDevChanges() {
     
     const log = document.getElementById('console-log');
     log.style.color = "#22c55e";
-    log.innerText = ">>> Изменения успешно применены.";
+    log.innerText = ">>> Системные переменные изменены.";
     
     setTimeout(() => { log.innerText = ""; closeAdminModal(); }, 1000);
+}
+
+// Кнопка на случай, если захочешь выйти из админки и заблокировать ее обратно
+function revokeAdminAccess() {
+    localStorage.removeItem('sjax_admin_authenticated');
+    document.getElementById('gate-pass').value = '';
+    document.getElementById('control-zone').style.display = 'none';
+    document.getElementById('auth-zone').style.display = 'block';
+    closeAdminModal();
 }
