@@ -9,12 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Подключаем официальный скрипт Яндекс ID для реальной авторизации -->
+    <script src="https://yastatic.net/s3/passport-sdk/pure/v1/sdk.js"></script>
+    <!-- Подключаем официальный скрипт Google OAuth -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
     <!-- Верхняя панель -->
     <header class="nav-container">
-        <!-- Исправлен нейминг на Cjax по твоей формуле (C + Ja + X) -->
         <div class="logo">Cjax<span class="dot">.</span>core</div>
         <div class="nav-right">
             <div class="lang-box">
@@ -23,7 +27,6 @@
                 <button onclick="setLang('de')" id="lang-de">DE</button>
             </div>
             <button id="user-badge" class="btn-secondary" onclick="toggleUserModal()">Войти</button>
-            <!-- Шестерёнка удалена. Вход в консоль теперь строго по Ctrl+Alt+A -->
         </div>
     </header>
 
@@ -56,6 +59,9 @@
             <div class="panel-body">
                 <p id="tender-desc" class="panel-hint">Внесите параметры технического задания для фиксации в распределенном стеке обработки.</p>
                 
+                <!-- Скрытый ID для режима редактирования -->
+                <input type="hidden" id="edit-tender-id" value="">
+
                 <div class="form-grid">
                     <input type="text" id="client-company" placeholder="Наименование организации">
                     <input type="email" id="client-email" placeholder="Контактный Email">
@@ -63,6 +69,7 @@
                 <div class="form-action-group">
                     <input type="text" id="tender-keywords" placeholder="Ключевые требования (например: высокая нагрузка, СУБД, Linux)">
                     <button onclick="submitTenderToDB()" id="tender-btn" class="btn-primary">Отправить ТЗ</button>
+                    <button onclick="cancelEditMode()" id="cancel-edit-btn" class="btn-secondary" style="display:none; color:#ef4444; border-color:#ef4444;">Отмена</button>
                 </div>
                 
                 <div id="tender-result" class="log-box success-msg" style="display: none;"></div>
@@ -76,8 +83,9 @@
                 </div>
             </div>
 
+            <!-- Реальный динамический лог транзакций -->
             <div class="db-logs-area" id="my-tenders-box" style="display:none;">
-                <div class="logs-header">Лог локальных транзакций в СУБД:</div>
+                <div class="logs-header" id="logs-header-title">Лог зарегистрированных ТЗ в системе:</div>
                 <div id="tenders-container"></div>
             </div>
         </section>
@@ -116,7 +124,7 @@
         </section>
     </main>
 
-    <!-- Окно авторизации -->
+    <!-- Окно авторизации (Интеграция реальных провайдеров) -->
     <div id="user-gate" class="modal-backdrop" style="display: none;">
         <div class="modal-box">
             <div class="modal-header">
@@ -127,18 +135,7 @@
         </div>
     </div>
 
-    <!-- Интерактивный селектор аккаунтов -->
-    <div id="oauth-selector-screen" class="modal-backdrop" style="display: none;">
-        <div class="modal-box oauth-picker-box">
-            <div class="modal-header">
-                <span id="oauth-screen-title" class="modal-title">Выбор аккаунта</span>
-                <span class="modal-close" onclick="closeOAuthScreen()">&times;</span>
-            </div>
-            <div class="modal-body" id="oauth-profiles-container"></div>
-        </div>
-    </div>
-
-    <!-- Скрытый бэкдор админа (Вызывается по горячим клавишам) -->
+    <!-- Скрытый терминал администратора (Ctrl + Alt + A) -->
     <div id="secure-gate" class="modal-backdrop" style="display: none;">
         <div class="modal-box">
             <div class="modal-header">
@@ -175,6 +172,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Контейнер для невидимой инициализации Google кнопки -->
+    <div id="hidden-g-signin" style="display: none;"></div>
 
     <script src="script.js"></script>
 </body>
