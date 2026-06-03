@@ -1,486 +1,226 @@
-:root {
-    --p-surface: #07050e;
-    --p-primary: #8b5cf6;
-    --p-highlight: #d946ef;
-    --text-primary: #f8fafc;
-    --text-muted: #94a3b8;
-    --glass-background: rgba(255, 255, 255, 0.02);
-    --glass-border: rgba(255, 255, 255, 0.06);
+/**
+ * Core Front-End Engine v2.6
+ * Модуль интернационализации, обработки транзакций СУБД и аутентификации.
+ */
+
+const i18n = {
+    ru: {
+        headline: "Разработка высокотехнологичного программного обеспечения<br><span class='purple-gradient'>и оптимизация бизнес-процессов</span>",
+        subline: "Проектирование отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация инфраструктуры на базе Linux систем.",
+        tenderT: "Подать тендерную заявку / Техническое задание",
+        tenderD: "Заполните форму для регистрации проекта в системе обработки заявок. Данные будут сохранены в распределенном хранилище.",
+        tenderB: "Зарегистрировать ТЗ",
+        stackH: "Используемый стек технологий",
+        legalH: "Раскрытие информации и официальные реквизиты"
+    },
+    en: {
+        headline: "High-Tech Software Development<br><span class='purple-gradient'>and Business Process Optimization</span>",
+        subline: "Engineering fault-tolerant architectures, ensuring information security, and automating infrastructure based on Linux environments.",
+        tenderT: "Submit Tender Proposal / Technical Specification",
+        tenderD: "Fill out the form to register your project in the processing system. Data will be saved in persistent storage.",
+        tenderB: "Register Spec",
+        stackH: "Tech Stack Utilization",
+        legalH: "Corporate Transparency & Official Requisites"
+    },
+    de: {
+        headline: "High-Tech Softwareentwicklung<br><span class='purple-gradient'>und Geschäftsprozessoptimierung</span>",
+        subline: "Entwicklung fehlertoleranter Architekturen, Gewährleistung der Informationssicherheit und Automatisierung der Infrastruktur auf Basis von Linux-Systemen.",
+        tenderT: "Ausschreibung einreichen / Lastenheft",
+        tenderD: "Füllen Sie das Formular aus, um das Projekt im Verarbeitungssystem zu registrieren. Die Daten werden im persistenten Speicher gesichert.",
+        tenderB: "Spezifikation registrieren",
+        stackH: "Technologiestapel",
+        legalH: "Offenlegung von Informationen und offizielle Requisiten"
+    }
+};
+
+let currentUser = JSON.parse(localStorage.getItem('sjax_logged_user')) || null;
+
+function setLang(lang) {
+    document.querySelectorAll('.lang-selector button').forEach(b => b.classList.remove('active-lang'));
+    document.getElementById(`lang-${lang}`).classList.add('active-lang');
+
+    const customH = localStorage.getItem('sjax_custom_headline');
+    document.getElementById('main-headline').innerHTML = (lang === 'ru' && customH) ? customH : i18n[lang].headline;
+    
+    document.getElementById('main-subline').innerText = i18n[lang].subline;
+    document.getElementById('tender-title').innerText = i18n[lang].tenderT;
+    document.getElementById('tender-desc').innerText = i18n[lang].tenderD;
+    document.getElementById('tender-btn').innerText = i18n[lang].tenderB;
+    document.getElementById('stack-headline').innerText = i18n[lang].stackH;
+    document.getElementById('legal-title').innerText = i18n[lang].legalH;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0; 
-    padding: 0;
+window.onload = function() {
+    if(localStorage.getItem('sjax_custom_headline')) {
+        document.getElementById('main-headline').innerHTML = localStorage.getItem('sjax_custom_headline');
+    }
+    const savedAvatar = localStorage.getItem('sjax_custom_avatar') || "https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png";
+    document.getElementById('ceo-avatar').src = savedAvatar;
+
+    updateUserInterface();
+    renderUserTenders();
+};
+
+/* --- МОДУЛЬ ТЕНДЕРНЫХ ЗАЯВОК (ПЕРСИСТЕНТНОЕ ХРАНИЛИЩЕ) --- */
+
+function submitTenderToDB() {
+    const company = document.getElementById('client-company').value.trim();
+    const email = document.getElementById('client-email').value.trim();
+    const keywords = document.getElementById('tender-keywords').value.trim();
+    const output = document.getElementById('tender-result');
+
+    if (!company || !email || !keywords) {
+        output.style.display = "block";
+        output.innerHTML = `<span style="color: #ef4444;">[DB ERROR] Ошибка валидации схемы. Заполните все обязательные поля.</span>`;
+        return;
+    }
+
+    const tenderId = "S_IDX_" + Math.floor(Math.random() * 900000 + 100000);
+    const newTender = {
+        id: tenderId,
+        company: company,
+        email: email,
+        keywords: keywords,
+        date: new Date().toLocaleString(),
+        user: currentUser ? currentUser.name : "Анонимный источник"
+    };
+
+    let db = JSON.parse(localStorage.getItem('sjax_global_database')) || [];
+    db.push(newTender);
+    localStorage.setItem('sjax_global_database', JSON.stringify(db));
+
+    output.style.display = "block";
+    output.innerHTML = `
+        <span style="color: #22c55e;">[TRANSACTION SUCCESS] Запись успешно добавлена в стек хранения.</span><br>
+        <strong>UID транзакции:</strong> ${tenderId}<br>
+        <span style="color: var(--p-highlight);">Логи синхронизированы с панелью мониторинга руководителя.</span>
+    `;
+
+    document.getElementById('client-company').value = '';
+    document.getElementById('client-email').value = '';
+    document.getElementById('tender-keywords').value = '';
+    renderUserTenders();
 }
 
-body {
-    background-color: var(--p-surface);
-    color: var(--text-primary);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-image: 
-        radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(217, 70, 239, 0.06) 0%, transparent 40%);
-    background-attachment: fixed;
-    line-height: 1.6;
+function renderUserTenders() {
+    const box = document.getElementById('my-tenders-box');
+    const container = document.getElementById('tenders-container');
+    let db = JSON.parse(localStorage.getItem('sjax_global_database')) || [];
+
+    if (db.length === 0) {
+        box.style.display = "none";
+        return;
+    }
+
+    box.style.display = "block";
+    container.innerHTML = "";
+    
+    db.reverse().forEach(item => {
+        container.innerHTML += `
+            <div class="db-tender-item">
+                <span style="color: #22c55e;">[${item.date}]</span> 
+                <strong>${item.id}</strong> — Организация: <em>${item.company}</em> (Регистратор: ${item.user}): <br>
+                <span>Спецификация требований: ${item.keywords}</span>
+            </div>
+        `;
+    });
 }
 
-code, .terminal-box, .section-meta, .stack-group h3, .db-tender-item {
-    font-family: 'JetBrains Mono', monospace;
+/* --- МОДУЛЬ ИМИТАЦИИ OAUTH ПРОДЛЕНИЯ СЕССИЙ --- */
+
+function toggleUserModal() {
+    const modal = document.getElementById('user-gate');
+    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+    if(modal.style.display === 'flex') renderUserModalContent();
 }
 
-.main-wrapper {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px 20px;
+function renderUserModalContent() {
+    const body = document.getElementById('user-modal-body');
+    if (currentUser) {
+        body.innerHTML = `
+            <p class="terminal-success">[AUTHORIZED] Авторизация действительна.</p>
+            <p class="terminal-text" style="color:#fff; margin-top:10px;">
+                Идентификатор: <strong>${currentUser.name}</strong><br>
+                Протокол авторизации: <span style="color:var(--p-highlight);">${currentUser.provider.toUpperCase()} API OAuth2</span>
+            </p>
+            <button onclick="logoutUser()" class="terminal-btn" style="background:#ef4444; margin-top:20px;">Завершить сессию (Exit)</button>
+        `;
+    } else {
+        body.innerHTML = `
+            <p class="terminal-text">system_core: # select_oauth_provider</p>
+            <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Выберите внешнего провайдера для привязки тендерных логов к вашему профилю:</p>
+            <div class="oauth-container">
+                <div class="social-btn btn-google" onclick="simulateOAuth('Google', 'Заказчик (Google ID)')">Интеграция через Google ID</div>
+                <div class="social-btn btn-yandex" onclick="simulateOAuth('Yandex', 'Представитель (Yandex ID)')">Интеграция через Яндекс ID</div>
+                <div class="social-btn btn-vk" onclick="simulateOAuth('VK', 'Пользователь (VK Connect)')">Интеграция через VK ID</div>
+            </div>
+        `;
+    }
 }
 
-.glass {
-    background: var(--glass-background);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid var(--glass-border);
-    border-radius: 24px;
+function simulateOAuth(provider, mockName) {
+    currentUser = { name: mockName, provider: provider };
+    localStorage.setItem('sjax_logged_user', JSON.stringify(currentUser));
+    updateUserInterface();
+    renderUserModalContent();
+    setTimeout(() => toggleUserModal(), 1000);
 }
 
-/* Навигационная панель */
-.navigation-bar {
-    position: sticky; 
-    top: 0; 
-    z-index: 999;
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center;
-    padding: 16px 40px;
-    background: rgba(7, 5, 14, 0.6);
-    backdrop-filter: blur(30px);
-    -webkit-backdrop-filter: blur(30px);
-    border-bottom: 1px solid var(--glass-border);
+function logoutUser() {
+    currentUser = null;
+    localStorage.removeItem('sjax_logged_user');
+    updateUserInterface();
+    renderUserModalContent();
+    setTimeout(() => toggleUserModal(), 800);
 }
 
-.logo {
-    font-size: 22px; 
-    font-weight: 800; 
-    color: #fff;
-}
-.logo-dot { 
-    color: var(--p-highlight); 
-}
-.brand-zone { 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
+function updateUserInterface() {
+    const navText = document.getElementById('user-nav-name');
+    if (currentUser) {
+        navText.innerText = `${currentUser.name}`;
+        navText.style.color = "var(--p-highlight)";
+    } else {
+        navText.innerText = "Войти в систему";
+        navText.style.color = "#fff";
+    }
 }
 
-.lang-selector button {
-    background: transparent; 
-    border: 1px solid var(--glass-border);
-    color: var(--text-muted); 
-    padding: 6px 12px; 
-    border-radius: 10px;
-    cursor: pointer; 
-    font-weight: 600; 
-    font-size: 13px; 
-    transition: 0.2s;
-}
-.lang-selector button.active-lang, .lang-selector button:hover {
-    background: var(--p-primary); 
-    color: #fff; 
-    border-color: #fff;
-}
-.control-gear {
-    background: transparent; 
-    border: none; 
-    color: #fff; 
-    font-size: 20px; 
-    cursor: pointer; 
-    margin-left: 15px;
+/* --- КОНСОЛЬ АДМИНИСТРАТОРА (ГЕНДИРЕКТОР БЕЖИН И. А.) --- */
+
+function openAdminModal() { document.getElementById('secure-gate').style.display = 'flex'; }
+function closeAdminModal() { document.getElementById('secure-gate').style.display = 'none'; }
+
+function tryGateAccess() {
+    const inputPass = document.getElementById('gate-pass').value;
+    if(inputPass === 'sudo_rm_rf_sidjacks') {
+        document.getElementById('auth-zone').style.display = 'none';
+        document.getElementById('control-zone').style.display = 'block';
+        document.getElementById('input-headline').value = document.getElementById('main-headline').innerText;
+        document.getElementById('input-avatar').value = document.getElementById('ceo-avatar').src;
+    } else {
+        alert('ACCESS DENIED. Нарушение прав доступа.');
+    }
 }
 
-/* Профиль в навигации */
-.user-badge-header {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid var(--glass-border);
-    padding: 8px 16px;
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.user-badge-header:hover {
-    background: var(--p-primary);
-    border-color: #fff;
+function selectPresetAvatar(url) {
+    document.getElementById('input-avatar').value = url;
 }
 
-/* Секция интро */
-.hero-section { 
-    text-align: center; 
-    padding: 80px 0 60px 0; 
-}
-.purple-gradient {
-    background: linear-gradient(to right, #fff, var(--p-highlight));
-    -webkit-background-clip: text; 
-    -webkit-text-fill-color: transparent;
-}
-.hero-section h1 { 
-    font-size: 3.2rem; 
-    font-weight: 800; 
-    line-height: 1.2; 
-    margin-bottom: 24px; 
-}
-.hero-section p { 
-    max-width: 700px; 
-    margin: 0 auto; 
-    color: var(--text-muted); 
-    font-size: 1.1rem; 
-}
-
-.ceo-badge {
-    display: inline-flex; 
-    align-items: center; 
-    gap: 14px;
-    padding: 10px 20px; 
-    border-radius: 50px; 
-    margin-bottom: 30px;
-}
-.avatar-container { 
-    position: relative; 
-}
-#ceo-avatar { 
-    width: 44px; 
-    height: 44px; 
-    border-radius: 50px; 
-    object-fit: cover; 
-    border: 2px solid var(--p-primary); 
-}
-.online-pulse {
-    position: absolute; 
-    bottom: 2px; 
-    right: 2px; 
-    width: 10px; 
-    height: 10px;
-    background: #22c55e; 
-    border-radius: 50%; 
-    box-shadow: 0 0 8px #22c55e;
-}
-.ceo-info { 
-    text-align: left; 
-    display: flex; 
-    flex-direction: column; 
-}
-.ceo-title { 
-    font-size: 11px; 
-    color: var(--text-muted); 
-}
-.ceo-name { 
-    font-size: 14px; 
-    font-weight: 700; 
-    color: #fff; 
-}
-
-/* Формы и тендерная платформа */
-.tender-constructor { 
-    padding: 40px; 
-    margin-bottom: 50px; 
-}
-.badge {
-    background: rgba(217, 70, 239, 0.1); 
-    color: var(--p-highlight);
-    padding: 4px 12px; 
-    border-radius: 30px; 
-    font-size: 12px; 
-    font-weight: 700; 
-    display: inline-block; 
-    margin-bottom: 12px;
-}
-.tender-form { 
-    margin-top: 24px; 
-}
-.form-row {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-.form-row input {
-    flex: 1;
-    padding: 14px;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    color: #fff;
-}
-.input-group { 
-    display: flex; 
-    gap: 12px; 
-}
-.input-group input {
-    flex: 1; 
-    padding: 16px; 
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--glass-border); 
-    border-radius: 14px; 
-    color: #fff; 
-    font-size: 15px;
-}
-.input-group input:focus, .form-row input:focus { 
-    border-color: var(--p-primary); 
-    outline: none; 
-}
-.input-group button, .terminal-btn {
-    background: var(--p-primary); 
-    color: #fff; 
-    border: none; 
-    padding: 16px 28px;
-    border-radius: 14px; 
-    font-weight: 700; 
-    cursor: pointer; 
-    transition: 0.2s;
-}
-.input-group button:hover { 
-    background: var(--p-highlight); 
-    transform: translateY(-2px); 
-}
-
-.tender-output {
-    margin-top: 20px; 
-    padding: 20px; 
-    background: rgba(0,0,0,0.4);
-    border-left: 4px solid var(--p-highlight); 
-    border-radius: 8px; 
-    font-size: 14px;
-}
-
-.user-tenders-list {
-    margin-top: 30px;
-    border-top: 1px solid var(--glass-border);
-    padding-top: 20px;
-}
-.user-tenders-list h3 {
-    font-size: 16px;
-    color: var(--p-highlight);
-    margin-bottom: 12px;
-}
-.db-tender-item {
-    background: rgba(0,0,0,0.2);
-    border: 1px solid var(--glass-border);
-    padding: 12px 16px;
-    border-radius: 12px;
-    margin-bottom: 8px;
-    font-size: 13px;
-}
-
-/* Сетка отображения технологического стека */
-.matrix-stack { 
-    margin-bottom: 60px; 
-}
-.section-meta { 
-    text-align: center; 
-    color: var(--text-muted); 
-    font-size: 13px; 
-    margin-bottom: 30px; 
-}
-.matrix-grid { 
-    display: grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap: 20px; 
-}
-.stack-group { 
-    padding: 24px; 
-}
-.stack-group h3 { 
-    font-size: 15px; 
-    color: var(--p-highlight); 
-    margin-bottom: 16px; 
-    border-bottom: 1px solid var(--glass-border); 
-    padding-bottom: 8px; 
-}
-.icon-flex { 
-    display: flex; 
-    flex-wrap: wrap; 
-    gap: 16px; 
-}
-.icon-item {
-    display: flex; 
-    align-items: center; 
-    gap: 8px; 
-    background: rgba(0,0,0,0.2);
-    padding: 8px 14px; 
-    border-radius: 12px; 
-    border: 1px solid var(--glass-border); 
-    font-size: 13px;
-}
-.icon-item img { 
-    width: 24px; 
-    height: 24px; 
-}
-
-/* Юридический блок реквизитов */
-.legal-board { 
-    padding: 40px; 
-}
-.legal-grid { 
-    display: flex; 
-    flex-direction: column; 
-    gap: 14px; 
-    margin-top: 24px; 
-}
-.legal-row { 
-    display: flex; 
-    justify-content: space-between; 
-    border-bottom: 1px solid rgba(255,255,255,0.03); 
-    padding-bottom: 10px; 
-    font-size: 15px; 
-}
-.legal-row span { 
-    color: var(--text-muted); 
-}
-
-/* Модальные окна и терминал управления */
-.admin-overlay {
-    display: none; 
-    position: fixed; 
-    top: 0; left: 0; 
-    width: 100%; height: 100%;
-    background: rgba(4, 3, 9, 0.85); 
-    z-index: 9999; 
-    align-items: center; 
-    justify-content: center;
-}
-.terminal-box { 
-    width: 90%; 
-    max-width: 550px; 
-    border-radius: 16px; 
-    overflow: hidden; 
-    box-shadow: 0 30px 70px rgba(0,0,0,0.8); 
-}
-.terminal-header {
-    background: rgba(255,255,255,0.05); 
-    padding: 12px 20px;
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    border-bottom: 1px solid var(--glass-border);
-}
-.terminal-dots span { 
-    display: inline-block; 
-    width: 12px; 
-    height: 12px; 
-    border-radius: 50%; 
-    margin-right: 6px; 
-}
-.terminal-dots span:nth-child(1) { background: #ef4444; }
-.terminal-dots span:nth-child(2) { background: #eab308; }
-.terminal-dots span:nth-child(3) { background: #22c55e; }
-.terminal-title { 
-    font-size: 13px; 
-    color: var(--text-muted); 
-}
-.close-gate { 
-    cursor: pointer; 
-    font-size: 20px; 
-}
-.terminal-body { 
-    padding: 30px; 
-    background: #040308; 
-}
-.terminal-text { 
-    color: #22c55e; 
-    margin-bottom: 15px; 
-}
-.terminal-success {
-    color: #22c55e;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-}
-
-.control-form label { 
-    display: block; 
-    margin-top: 15px; 
-    font-size: 13px; 
-    color: var(--text-muted); 
-}
-.control-form input {
-    width: 100%; 
-    padding: 12px; 
-    background: #0c0a14; 
-    border: 1px solid var(--glass-border);
-    border-radius: 8px; 
-    color: #fff; 
-    margin-top: 6px;
-}
-#gate-pass { 
-    width: 100%; 
-    padding: 14px; 
-    background: #0c0a14; 
-    border: 1px solid rgba(255, 255, 255, 0.1); 
-    border-radius: 8px; 
-    color: #fff; 
-    font-size: 18px; 
-    text-align: center; 
-    letter-spacing: 4px; 
-    margin-bottom: 20px; 
-}
-#gate-pass:focus { 
-    border-color: var(--p-primary); 
-    outline: none; 
-}
-
-/* Архитектура кнопок OAuth-авторизации */
-.oauth-container {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-}
-.social-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 14px;
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
-    color: #fff;
-    transition: 0.2s;
-}
-.btn-google { background: #de4032; }
-.btn-yandex { background: #fc3f1d; }
-.btn-vk { background: #0077ff; }
-.social-btn:hover { 
-    transform: translateY(-2px); 
-    opacity: 0.95; 
-}
-
-/* Превью системы аватаров */
-.avatar-presets {
-    display: flex; 
-    gap: 12px; 
-    margin: 10px 0;
-    background: rgba(0,0,0,0.4); 
-    padding: 10px; 
-    border-radius: 12px;
-}
-.preset-preview {
-    width: 55px; 
-    height: 55px; 
-    border-radius: 10px; 
-    object-fit: cover;
-    cursor: pointer; 
-    border: 2px solid transparent; 
-    transition: 0.2s;
-}
-.preset-preview:hover { 
-    transform: scale(1.05); 
-    border-color: var(--p-highlight); 
-}
-
-@media(max-width: 800px) {
-    .hero-section h1 { font-size: 2.1rem; }
-    .matrix-grid { grid-template-columns: 1fr; }
-    .form-row, .input-group { flex-direction: column; }
-    .legal-row { flex-direction: column; gap: 4px; }
-    .navigation-bar { padding: 16px 20px; }
+function commitDevChanges() {
+    const nextHeadline = document.getElementById('input-headline').value;
+    const nextAvatar = document.getElementById('input-avatar').value;
+    
+    localStorage.setItem('sjax_custom_headline', nextHeadline);
+    document.getElementById('main-headline').innerHTML = nextHeadline;
+    
+    if(nextAvatar.trim() !== "") {
+        localStorage.setItem('sjax_custom_avatar', nextAvatar);
+        document.getElementById('ceo-avatar').src = nextAvatar;
+    }
+    
+    const log = document.getElementById('console-log');
+    log.style.color = "#22c55e";
+    log.innerText = ">>> Матрица конфигурации обновлена успешно.";
+    
+    setTimeout(() => { log.innerText = ""; closeAdminModal(); }, 1200);
 }
