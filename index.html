@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ООО «Сиджакс» // High-Tech IT & Software Development</title>
+    <title>ООО «Сиджакс» — Официальный сайт</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -11,9 +11,8 @@
 </head>
 <body>
 
-    <header class="glass-navigation">
+    <header class="navigation-bar">
         <div class="brand-zone">
-            <span class="logo-accent">⚡</span>
             <div class="logo">Sjax<span class="logo-dot">.</span>core</div>
         </div>
         <nav class="nav-controls">
@@ -40,42 +39,42 @@
                     <div class="online-pulse"></div>
                 </div>
                 <div class="ceo-info">
-                    <span class="ceo-title">Генеральный директор & Главный архитектор</span>
+                    <span class="ceo-title">Генеральный директор / Главный архитектор</span>
                     <span class="ceo-name">Бежин И. А.</span>
                 </div>
             </div>
             
-            <h1 id="main-headline">Мы не участвуем в шаблонных тендерах.<br><span class="purple-gradient">Мы создаем стандарты индустрии.</span></h1>
-            <p id="main-subline">Забудьте про бюрократию Газпрома. ООО «Сиджакс» — это кастомная разработка ПО, кибербезопасность и автоматизация процессов на базе Linux систем.</p>
+            <h1 id="main-headline">Разработка высокотехнологичного программного обеспечения<br><span class="purple-gradient">и оптимизация бизнес-процессов</span></h1>
+            <p id="main-subline">Проектирование отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация инфраструктуры на базе Linux систем.</p>
         </section>
 
         <section class="tender-constructor glass">
             <div class="tender-header">
-                <span class="badge">Заказчикам</span>
-                <h2 id="tender-title">Подать тендерную заявку / ТЗ</h2>
-                <p id="tender-desc">Заполните поля ниже. Ваша заявка мгновенно запишется в защищенную базу данных ООО «Сиджакс».</p>
+                <span class="badge">Тендерная платформа</span>
+                <h2 id="tender-title">Подать тендерную заявку / Техническое задание</h2>
+                <p id="tender-desc">Заполните форму для регистрации проекта в системе обработки заявок. Данные будут сохранены в распределенном хранилище.</p>
             </div>
             <div class="tender-form">
                 <div class="form-row">
-                    <input type="text" id="client-company" placeholder="Ваша организация (Например: ПАО Тантал)">
-                    <input type="email" id="client-email" placeholder="Контактный Email">
+                    <input type="text" id="client-company" placeholder="Наименование организации">
+                    <input type="email" id="client-email" placeholder="Контактный Email для связи">
                 </div>
                 <div class="input-group">
-                    <input type="text" id="tender-keywords" placeholder="Суть проекта и ключевые слова (Например: Высокая нагрузка, база данных, приложение iOS)">
-                    <button onclick="submitTenderToDB()" id="tender-btn">Отправить в Sjax.db</button>
+                    <input type="text" id="tender-keywords" placeholder="Ключевые слова задачи (например: высокая нагрузка, СУБД, мобильное приложение)">
+                    <button onclick="submitTenderToDB()" id="tender-btn">Зарегистрировать ТЗ</button>
                 </div>
                 <div id="tender-result" class="tender-output" style="display: none;"></div>
             </div>
 
             <div class="user-tenders-list" id="my-tenders-box" style="display:none;">
-                <h3>Ваши отправленные заявки (Лог из БД):</h3>
+                <h3>Зарегистрированные заявки в системе:</h3>
                 <div id="tenders-container"></div>
             </div>
         </section>
 
         <section class="matrix-stack">
-            <h2 id="stack-headline">Инженерная экосистема (Стек)</h2>
-            <p class="section-meta">Официально используемое ПО и языки в соответствии с требованиями ИТ-аккредитации.</p>
+            <h2 id="stack-headline">Используемый стек технологий</h2>
+            <p class="section-meta">Программное обеспечение и языки программирования для построения ИТ-инфраструктуры.</p>
             
             <div class="matrix-grid">
                 <div class="stack-group glass">
@@ -113,10 +112,10 @@
                     <div class="icon-flex">
                         <div class="icon-item">
                             <svg viewBox="0 0 24 24" width="40" height="40" fill="#006D55"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                            <span>Kaspersky Sec</span>
+                            <span>Kaspersky SDK</span>
                         </div>
                         <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg"><span>Docker</span></div>
-                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg"><span>Bash Scripts</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg"><span>Bash Scripting</span></div>
                         <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg"><span>PostgreSQL</span></div>
                     </div>
                 </div>
@@ -124,15 +123,15 @@
         </section>
 
         <section class="legal-board glass">
-            <h2 id="legal-title">Раскрытие информации и реквизиты</h2>
+            <h2 id="legal-title">Раскрытие информации и официальные реквизиты</h2>
             <div class="legal-grid">
                 <div class="legal-row"><span>Полное наименование</span><strong>Общество с Ограниченной Ответственностью "Сиджакс"</strong></div>
                 <div class="legal-row"><span>Краткое наименование</span><strong>ООО "Сиджакс"</strong></div>
-                <div class="legal-row"><span>Генеральный директор</span><strong>Бежин Игорь Алексеевич (с 22.05.2026)</strong></div>
+                <div class="legal-row"><span>Генеральный директор</span><strong>Бежин Игорь Алексеевич</strong></div>
                 <div class="legal-row"><span>Юридический адрес</span><strong>197375, г Санкт-Петербург, ул Вербная, д 27 литера а, помещ 17-Н</strong></div>
                 <div class="legal-row"><span>ИНН / КПП</span><strong>7814863792 / 781401001</strong></div>
-                <div class="legal-row"><span>ОГРН</span><strong>1267800038098 (от 22 мая 2026)</strong></div>
-                <div class="legal-row"><span>Основной ОКВЭД</span><strong>62.01 — Разработка компьютерного программного обеспечения</strong></div>
+                <div class="legal-row"><span>ОГРН</span><strong>1267800038098</strong></div>
+                <div class="legal-row"><span>Основной код ОКВЭД</span><strong>62.01 (Разработка компьютерного программного обеспечения)</strong></div>
             </div>
         </section>
     </main>
@@ -163,19 +162,19 @@
                     <button onclick="tryGateAccess()" class="terminal-btn">Execute</button>
                 </div>
                 <div id="control-zone" style="display: none;">
-                    <p class="terminal-success">[SUCCESS] Добро пожаловать, Игорь Алексеевич.</p>
+                    <p class="terminal-success">[SUCCESS] Сессия администратора инициализирована.</p>
                     <div class="control-form">
-                        <label>Изменить главный слоган компании:</label>
+                        <label>Редактирование главного слогана:</label>
                         <input type="text" id="input-headline">
                         
-                        <label>Быстрое переключение ваших аватаров:</label>
+                        <label>Выбор активного профильного аватара:</label>
                         <div class="avatar-presets">
                             <img src="https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png" onclick="selectPresetAvatar(this.src)" class="preset-preview">
                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQONA4VPnuC95FvhA2BJG3ruIGgyJa0oaiVJg&s" onclick="selectPresetAvatar(this.src)" class="preset-preview">
                             <img src="https://pbs.twimg.com/media/EpnN1Y5W4AA3xWv?format=jpg&name=small" onclick="selectPresetAvatar(this.src)" class="preset-preview">
                         </div>
 
-                        <label>Или вставить абсолютно новый URL фото:</label>
+                        <label>Или указать кастомный URL изображения:</label>
                         <input type="text" id="input-avatar" placeholder="https://...">
                         
                         <button onclick="commitDevChanges()" class="terminal-btn save-btn">Commit Changes</button>
