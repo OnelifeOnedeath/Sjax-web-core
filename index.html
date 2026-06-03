@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ООО «Сиджакс» // High-Tech IT & Software Development</title>
-    <!-- Подключаем шрифты для жесткого премиального вайба -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
@@ -12,7 +11,6 @@
 </head>
 <body>
 
-    <!-- Навигация (iOS 26 момент) -->
     <header class="glass-navigation">
         <div class="brand-zone">
             <span class="logo-accent">⚡</span>
@@ -24,18 +22,21 @@
                 <button onclick="setLang('en')" id="lang-en">EN</button>
                 <button onclick="setLang('de')" id="lang-de">DE</button>
             </div>
+            
+            <div id="user-profile-zone" class="user-badge-header" onclick="toggleUserModal()">
+                <span id="user-nav-name">Войти в систему</span>
+            </div>
+
             <button class="control-gear" onclick="openAdminModal()">⚙️</button>
         </nav>
     </header>
 
     <main class="main-wrapper">
         
-        <!-- Герой-секция с профилем Гендиректора -->
         <section class="hero-section">
             <div class="ceo-badge glass">
                 <div class="avatar-container">
-                    <!-- Дефолтная заглушка, через админку сможешь поставить свою фотку -->
-                    <img id="ceo-avatar" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150" alt="CEO">
+                    <img id="ceo-avatar" src="https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png" alt="CEO">
                     <div class="online-pulse"></div>
                 </div>
                 <div class="ceo-info">
@@ -48,41 +49,44 @@
             <p id="main-subline">Забудьте про бюрократию Газпрома. ООО «Сиджакс» — это кастомная разработка ПО, кибербезопасность и автоматизация процессов на базе Linux систем.</p>
         </section>
 
-        <!-- ИНТЕРАКТИВНЫЙ БЛОК: Сделай свой тендер за 10 секунд (То, чего нет у других!) -->
         <section class="tender-constructor glass">
             <div class="tender-header">
-                <span class="badge">Уникальная фича</span>
-                <h2 id="tender-title">Умный ИТ-Конструктор ТЗ</h2>
-                <p id="tender-desc">Введите ключевые слова вашей задачи, и наша система мгновенно адаптирует стек.</p>
+                <span class="badge">Заказчикам</span>
+                <h2 id="tender-title">Подать тендерную заявку / ТЗ</h2>
+                <p id="tender-desc">Заполните поля ниже. Ваша заявка мгновенно запишется в защищенную базу данных ООО «Сиджакс».</p>
             </div>
             <div class="tender-form">
+                <div class="form-row">
+                    <input type="text" id="client-company" placeholder="Ваша организация (Например: ПАО Тантал)">
+                    <input type="email" id="client-email" placeholder="Контактный Email">
+                </div>
                 <div class="input-group">
-                    <input type="text" id="tender-keywords" placeholder="Например: Высокая нагрузка, защита данных, парсинг, мобильное приложение...">
-                    <button onclick="analyzeTender()" id="tender-btn">Сгенерировать решение</button>
+                    <input type="text" id="tender-keywords" placeholder="Суть проекта и ключевые слова (Например: Высокая нагрузка, база данных, приложение iOS)">
+                    <button onclick="submitTenderToDB()" id="tender-btn">Отправить в Sjax.db</button>
                 </div>
-                <div id="tender-result" class="tender-output" style="display: none;">
-                    <!-- Сюда скрипт выведет кастомный ответ -->
-                </div>
+                <div id="tender-result" class="tender-output" style="display: none;"></div>
+            </div>
+
+            <div class="user-tenders-list" id="my-tenders-box" style="display:none;">
+                <h3>Ваши отправленные заявки (Лог из БД):</h3>
+                <div id="tenders-container"></div>
             </div>
         </section>
 
-        <!-- ХАРДКОРНЫЙ ТЕХНОЛОГИЧЕСКИЙ СТЕК -->
         <section class="matrix-stack">
             <h2 id="stack-headline">Инженерная экосистема (Стек)</h2>
             <p class="section-meta">Официально используемое ПО и языки в соответствии с требованиями ИТ-аккредитации.</p>
             
             <div class="matrix-grid">
-                <!-- Категория: Системы -->
                 <div class="stack-group glass">
                     <h3>Kernel & OS</h3>
                     <div class="icon-flex">
-                        <div class="icon-item" title="Linux Enterprise"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg"><span>Linux Core</span></div>
-                        <div class="icon-item" title="Arch Linux"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/archlinux/archlinux-original.svg"><span>Arch</span></div>
-                        <div class="icon-item" title="Ubuntu Server"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ubuntu/ubuntu-plain.svg"><span>Ubuntu</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linux/linux-original.svg"><span>Linux Core</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/archlinux/archlinux-original.svg"><span>Arch Linux</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ubuntu/ubuntu-plain.svg"><span>Ubuntu Server</span></div>
                     </div>
                 </div>
 
-                <!-- Категория: Разработка -->
                 <div class="stack-group glass">
                     <h3>Languages & Backend</h3>
                     <div class="icon-flex">
@@ -95,34 +99,30 @@
                     </div>
                 </div>
 
-                <!-- Категория: Веб -->
                 <div class="stack-group glass">
-                    <h3>Web & Frontend Architecture</h3>
+                    <h3>Web Architecture</h3>
                     <div class="icon-flex">
-                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"><span>JavaScript ES6</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg"><span>JavaScript</span></div>
                         <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg"><span>TypeScript</span></div>
                         <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg"><span>Node.js</span></div>
                     </div>
                 </div>
 
-                <!-- Категория: Безопасность и Среда -->
                 <div class="stack-group glass">
                     <h3>SecOps & Infrastructure</h3>
                     <div class="icon-flex">
-                        <!-- Иконка Касперского через чистый SVG, так как в девиконсе его нет -->
-                        <div class="icon-item" title="Kaspersky Lab Integration">
+                        <div class="icon-item">
                             <svg viewBox="0 0 24 24" width="40" height="40" fill="#006D55"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                             <span>Kaspersky Sec</span>
                         </div>
                         <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg"><span>Docker</span></div>
-                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg"><span>Bash Scripting</span></div>
+                        <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg"><span>Bash Scripts</span></div>
                         <div class="icon-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg"><span>PostgreSQL</span></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- КОРПОРАТИВНЫЙ БЛОК: Официальные Данные ООО -->
         <section class="legal-board glass">
             <h2 id="legal-title">Раскрытие информации и реквизиты</h2>
             <div class="legal-grid">
@@ -137,7 +137,18 @@
         </section>
     </main>
 
-    <!-- Сверхсекретный Терминал Админки (Модалка) -->
+    <div id="user-gate" class="admin-overlay">
+        <div class="terminal-box glass">
+            <div class="terminal-header">
+                <div class="terminal-dots"><span></span><span></span><span></span></div>
+                <span class="terminal-title">auth_service_v2.6</span>
+                <span class="close-gate" onclick="toggleUserModal()">&times;</span>
+            </div>
+            <div class="terminal-body" id="user-modal-body">
+                </div>
+        </div>
+    </div>
+
     <div id="secure-gate" class="admin-overlay">
         <div class="terminal-box glass">
             <div class="terminal-header">
@@ -146,20 +157,25 @@
                 <span class="close-gate" onclick="closeAdminModal()">&times;</span>
             </div>
             <div class="terminal-body">
-                <!-- Слой авторизации -->
                 <div id="auth-zone">
                     <p class="terminal-text">root@sjax-core: # enter_security_key</p>
                     <input type="password" id="gate-pass" placeholder="••••••••••••" autofocus>
                     <button onclick="tryGateAccess()" class="terminal-btn">Execute</button>
                 </div>
-                <!-- Слой управления -->
                 <div id="control-zone" style="display: none;">
-                    <p class="terminal-success">[SUCCESS] Access granted to Dev-Console.</p>
+                    <p class="terminal-success">[SUCCESS] Добро пожаловать, Игорь Алексеевич.</p>
                     <div class="control-form">
-                        <label>Изменить главный слоган сайта:</label>
+                        <label>Изменить главный слоган компании:</label>
                         <input type="text" id="input-headline">
                         
-                        <label>Ссылка на твой новый аватар (URL картинки):</label>
+                        <label>Быстрое переключение ваших аватаров:</label>
+                        <div class="avatar-presets">
+                            <img src="https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png" onclick="selectPresetAvatar(this.src)" class="preset-preview">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQONA4VPnuC95FvhA2BJG3ruIGgyJa0oaiVJg&s" onclick="selectPresetAvatar(this.src)" class="preset-preview">
+                            <img src="https://pbs.twimg.com/media/EpnN1Y5W4AA3xWv?format=jpg&name=small" onclick="selectPresetAvatar(this.src)" class="preset-preview">
+                        </div>
+
+                        <label>Или вставить абсолютно новый URL фото:</label>
                         <input type="text" id="input-avatar" placeholder="https://...">
                         
                         <button onclick="commitDevChanges()" class="terminal-btn save-btn">Commit Changes</button>
