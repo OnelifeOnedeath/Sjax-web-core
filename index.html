@@ -12,8 +12,10 @@
 </head>
 <body>
 
+    <!-- Верхняя панель -->
     <header class="nav-container">
-        <div class="logo">Sjax<span class="dot">.</span>core</div>
+        <!-- Исправлен нейминг на Cjax по твоей формуле (C + Ja + X) -->
+        <div class="logo">Cjax<span class="dot">.</span>core</div>
         <div class="nav-right">
             <div class="lang-box">
                 <button onclick="setLang('ru')" id="lang-ru" class="active-lang">RU</button>
@@ -21,12 +23,14 @@
                 <button onclick="setLang('de')" id="lang-de">DE</button>
             </div>
             <button id="user-badge" class="btn-secondary" onclick="toggleUserModal()">Войти</button>
-            <button class="btn-icon" onclick="openAdminModal()">⚙️</button>
+            <!-- Шестерёнка удалена. Вход в консоль теперь строго по Ctrl+Alt+A -->
         </div>
     </header>
 
+    <!-- Главный контент -->
     <main class="layout-wrapper">
         
+        <!-- Блок Руководителя -->
         <section class="hero-block">
             <div class="profile-card">
                 <div class="avatar-wrapper">
@@ -43,6 +47,7 @@
             <p id="main-subline">Проектирование отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация распределенной инфраструктуры.</p>
         </section>
 
+        <!-- Интерактивная платформа ТЗ -->
         <section class="console-section">
             <div class="panel-header">
                 <div class="window-controls"><span></span><span></span><span></span></div>
@@ -77,6 +82,7 @@
             </div>
         </section>
 
+        <!-- Технологический стек -->
         <section class="tech-section">
             <h2 id="stack-headline">Используемый технологический стек</h2>
             <div class="tags-grid">
@@ -96,6 +102,7 @@
             </div>
         </section>
 
+        <!-- Реквизиты -->
         <section class="legal-section">
             <h2 id="legal-title">Раскрытие информации / Реквизиты</h2>
             <div class="legal-table">
@@ -109,6 +116,7 @@
         </section>
     </main>
 
+    <!-- Окно авторизации -->
     <div id="user-gate" class="modal-backdrop" style="display: none;">
         <div class="modal-box">
             <div class="modal-header">
@@ -119,6 +127,7 @@
         </div>
     </div>
 
+    <!-- Интерактивный селектор аккаунтов -->
     <div id="oauth-selector-screen" class="modal-backdrop" style="display: none;">
         <div class="modal-box oauth-picker-box">
             <div class="modal-header">
@@ -129,10 +138,11 @@
         </div>
     </div>
 
+    <!-- Скрытый бэкдор админа (Вызывается по горячим клавишам) -->
     <div id="secure-gate" class="modal-backdrop" style="display: none;">
         <div class="modal-box">
             <div class="modal-header">
-                <span class="modal-title">sjax@admin-terminal:~</span>
+                <span class="modal-title">cjax@admin-terminal:~</span>
                 <span class="modal-close" onclick="closeAdminModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -158,7 +168,7 @@
                         <input type="text" id="input-avatar" placeholder="https://...">
                         
                         <button onclick="commitDevChanges()" class="btn-primary save-btn">Commit Changes</button>
-                        <button onclick="revokeAdminAccess()" class="btn-secondary logout-admin-btn" style="margin-top: 8px; width: 100%; color: #ef4444; border-color: rgba(239,68,68,0.3)">Сбросить токен админа на этом ПК</button>
+                        <button onclick="revokeAdminAccess()" class="btn-secondary logout-admin-btn" style="margin-top: 8px; width: 100%; color: #ef4444; border-color: rgba(239,68,68,0.3)">Сбросить токен админа</button>
                         <p id="console-log"></p>
                     </div>
                 </div>
