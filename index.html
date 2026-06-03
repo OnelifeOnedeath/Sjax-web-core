@@ -9,18 +9,14 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
     <link rel="stylesheet" href="style.css">
-    
-    <!-- Подключаем официальный скрипт Яндекс ID для реальной авторизации -->
-    <script src="https://yastatic.net/s3/passport-sdk/pure/v1/sdk.js"></script>
-    <!-- Подключаем официальный скрипт Google OAuth -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
-<body>
+<body class="theme-dark" id="app-body">
 
     <!-- Верхняя панель -->
     <header class="nav-container">
         <div class="logo">Cjax<span class="dot">.</span>core</div>
         <div class="nav-right">
+            <button onclick="toggleTheme()" class="btn-secondary id="theme-toggle-btn">☀️ Светлая тема</button>
             <div class="lang-box">
                 <button onclick="setLang('ru')" id="lang-ru" class="active-lang">RU</button>
                 <button onclick="setLang('en')" id="lang-en">EN</button>
@@ -47,7 +43,7 @@
             </div>
             
             <h1 id="main-headline">Разработка высокотехнологичного ПО<br><span class="gradient-text">и проектирование систем</span></h1>
-            <p id="main-subline">Проектирование отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация распределенной инфраструктуры.</p>
+            <p id="main-subline">Проекпирование отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация распределенной инфраструктуры.</p>
         </section>
 
         <!-- Интерактивная платформа ТЗ -->
@@ -59,17 +55,16 @@
             <div class="panel-body">
                 <p id="tender-desc" class="panel-hint">Внесите параметры технического задания для фиксации в распределенном стеке обработки.</p>
                 
-                <!-- Скрытый ID для режима редактирования -->
-                <input type="hidden" id="edit-tender-id" value="">
-
                 <div class="form-grid">
                     <input type="text" id="client-company" placeholder="Наименование организации">
                     <input type="email" id="client-email" placeholder="Контактный Email">
                 </div>
-                <div class="form-action-group">
-                    <input type="text" id="tender-keywords" placeholder="Ключевые требования (например: высокая нагрузка, СУБД, Linux)">
+                <div class="form-grid calculation-row">
+                    <input type="text" id="tender-keywords" placeholder="Ключевые требования (например: СУБД, Linux)">
+                    <input type="number" id="client-budget" placeholder="Ориентировочный бюджет (руб)">
+                </div>
+                <div style="margin-top: 12px; text-align: right;">
                     <button onclick="submitTenderToDB()" id="tender-btn" class="btn-primary">Отправить ТЗ</button>
-                    <button onclick="cancelEditMode()" id="cancel-edit-btn" class="btn-secondary" style="display:none; color:#ef4444; border-color:#ef4444;">Отмена</button>
                 </div>
                 
                 <div id="tender-result" class="log-box success-msg" style="display: none;"></div>
@@ -83,9 +78,8 @@
                 </div>
             </div>
 
-            <!-- Реальный динамический лог транзакций -->
             <div class="db-logs-area" id="my-tenders-box" style="display:none;">
-                <div class="logs-header" id="logs-header-title">Лог зарегистрированных ТЗ в системе:</div>
+                <div class="logs-header">Лог транзакций в СУБД ядра:</div>
                 <div id="tenders-container"></div>
             </div>
         </section>
@@ -124,22 +118,24 @@
         </section>
     </main>
 
-    <!-- Окно авторизации (Интеграция реальных провайдеров) -->
+    <!-- Полноценное окно авторизации (Вместо старых списков из image_95aa81.jpg) -->
     <div id="user-gate" class="modal-backdrop" style="display: none;">
         <div class="modal-box">
             <div class="modal-header">
-                <span class="modal-title">auth_manager_v2.6</span>
+                <span class="modal-title">identity_provider_v3.0</span>
                 <span class="modal-close" onclick="toggleUserModal()">&times;</span>
             </div>
-            <div class="modal-body" id="user-modal-body"></div>
+            <div class="modal-body" id="user-modal-body">
+                <!-- Контент генерируется динамически через JS (Форма логина + кнопки OAuth) -->
+            </div>
         </div>
     </div>
 
-    <!-- Скрытый терминал администратора (Ctrl + Alt + A) -->
+    <!-- Красивый интерактивный терминал главного админа (Fix для image_95adeb.png) -->
     <div id="secure-gate" class="modal-backdrop" style="display: none;">
-        <div class="modal-box">
+        <div class="modal-box admin-terminal-box">
             <div class="modal-header">
-                <span class="modal-title">cjax@admin-terminal:~</span>
+                <span class="modal-title">cjax@root-core-terminal:~</span>
                 <span class="modal-close" onclick="closeAdminModal()">&times;</span>
             </div>
             <div class="modal-body">
@@ -149,32 +145,32 @@
                     <button onclick="tryGateAccess()" class="btn-primary terminal-enter-btn">Execute</button>
                 </div>
                 <div id="control-zone" style="display: none;">
-                    <p class="console-success">[OK] Доступ к ядру конфигурации предоставлен.</p>
+                    <p class="console-success">[MASTER-ROOT] Доступ к модификации СУБД открыт.</p>
+                    
                     <div class="admin-fields">
-                        <label>Редактирование слогана:</label>
+                        <label>Редактирование главного слогана:</label>
                         <input type="text" id="input-headline">
                         
-                        <label>Предустановленные аватары:</label>
-                        <div class="avatar-selector">
-                            <img src="https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png" onclick="selectPresetAvatar(this.src)">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQONA4VPnuC95FvhA2BJG3ruIGgyJa0oaiVJg&s" alt="Preset 2">
-                            <img src="https://pbs.twimg.com/media/EpnN1Y5W4AA3xWv?format=jpg&name=small" alt="Preset 3">
-                        </div>
-
                         <label>Кастомный URL аватара:</label>
                         <input type="text" id="input-avatar" placeholder="https://...">
                         
-                        <button onclick="commitDevChanges()" class="btn-primary save-btn">Commit Changes</button>
-                        <button onclick="revokeAdminAccess()" class="btn-secondary logout-admin-btn" style="margin-top: 8px; width: 100%; color: #ef4444; border-color: rgba(239,68,68,0.3)">Сбросить токен админа</button>
+                        <button onclick="commitDevChanges()" class="btn-primary save-btn" style="margin-top:12px; width:100%;">Commit System Changes</button>
+                        
+                        <!-- Новый мощный блок редактирования тендеров -->
+                        <div class="admin-db-editor-zone">
+                            <h3>Модератор базы данных тендеров</h3>
+                            <div id="admin-tenders-list-edit">
+                                <!-- Список тендеров с инпутами для редактирования цен и данных -->
+                            </div>
+                        </div>
+
+                        <button onclick="revokeAdminAccess()" class="btn-secondary logout-admin-btn">Уничтожить токен сессии админа</button>
                         <p id="console-log"></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Контейнер для невидимой инициализации Google кнопки -->
-    <div id="hidden-g-signin" style="display: none;"></div>
 
     <script src="script.js"></script>
 </body>
