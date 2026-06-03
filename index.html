@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ООО «Сиджакс» — Официальный сайт</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="glass-header">
+        <div class="logo">Sidjacks</div>
+        <nav>
+            <div class="lang-switcher">
+                <button onclick="changeLanguage('ru')" id="btn-ru" class="active">RU</button>
+                <button onclick="changeLanguage('en')" id="btn-en">EN</button>
+                <button onclick="changeLanguage('de')" id="btn-de">DE</button>
+            </div>
+            <a href="#admin" class="admin-link-icon" onclick="toggleAdminModal()">⚙️</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1 id="hero-title">Разработка ИТ-решений будущего</h1>
+            <p id="hero-subtitle">Создаем высокотехнологичное программное обеспечение и оптимизируем процессы.</p>
+        </section>
+
+        <section class="tech-section">
+            <h2 id="tech-title">Технологический стек</h2>
+            <div class="tech-grid">
+                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" alt="C++"><span>C++</span></div>
+                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" alt="C#"><span>C#</span></div>
+                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python"><span>Python</span></div>
+                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kotlin/kotlin-original.svg" alt="Kotlin"><span>Kotlin</span></div>
+                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/lua/lua-original.svg" alt="Lua"><span>Lua</span></div>
+                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JS"><span>JavaScript</span></div>
+                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" alt="TS"><span>TypeScript</span></div>
+                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original-wordmark.svg" alt="Go"><span>Go</span></div>
+                <div class="tech-card"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" alt="SQL"><span>PostgreSQL</span></div>
+            </div>
+        </section>
+
+        <section class="services-section">
+            <h2 id="services-title">Стоимость услуг</h2>
+            <div class="services-grid">
+                <div class="service-card glass">
+                    <h3>Разработка ПО</h3>
+                    <p id="price-1">от 150 000 ₽ / по ТЗ</p>
+                </div>
+                <div class="service-card glass">
+                    <h3>ИТ-Консалтинг</h3>
+                    <p id="price-2">от 5 000 ₽ / час</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="requisites-section glass">
+            <h2 id="req-title">Официальные реквизиты ООО «Сиджакс»</h2>
+            <div class="req-grid">
+                <div><strong>Полное наименование:</strong> <span>Общество с Ограниченной Ответственностью "Сиджакс"</span></div>
+                <div><strong>Краткое наименование:</strong> <span>ООО "Сиджакс"</span></div>
+                <div><strong>Руководитель:</strong> <span>Бежин Игорь Алексеевич</span></div>
+                <div><strong>Юридический адрес:</strong> <span>197375, г Санкт-Петербург, ул Вербная, д 27 литера а, помещ 17-Н</span></div>
+                <div><strong>ИНН:</strong> <span>7814863792</span></div>
+                <div><strong>ОГРН:</strong> <span>1267800038098</span></div>
+                <div><strong>Основной ОКВЭД:</strong> <span>62.01 (Разработка компьютерного программного обеспечения)</span></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="admin-modal" class="modal">
+        <div class="modal-content glass">
+            <span class="close-btn" onclick="toggleAdminModal()">&times;</span>
+            <h2>Панель управления (Вход)</h2>
+            <div id="admin-auth">
+                <input type="password" id="admin-password" placeholder="Введите ключ доступа...">
+                <button onclick="loginAdmin()">Войти</button>
+            </div>
+            <div id="admin-panel" style="display: none;">
+                <h3>Редактировать контент сайта</h3>
+                <label>Заголовок Hero:</label>
+                <input type="text" id="edit-hero-title">
+                <button onclick="saveAdminChanges()">Сохранить изменения</button>
+                <p style="color: #4ade80; margin-top: 10px;" id="save-status"></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
