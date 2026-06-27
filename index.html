@@ -4,96 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ООО «Сиджакс» — Разработка ПО</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="theme-dark" id="app-body">
+<body class="theme-dark">
 
     <header class="nav-container">
         <div class="logo">Cjax<span class="dot">.</span>core</div>
-        <div class="nav-right">
-            <button onclick="toggleTheme()" class="btn-secondary" id="theme-toggle-btn">☀️ Светлая тема</button>
-            <div class="lang-box">
-                <button onclick="setLang('ru')" id="lang-ru" class="active-lang">RU</button>
-                <button onclick="setLang('en')" id="lang-en">EN</button>
-                <button onclick="setLang('de')" id="lang-de">DE</button>
-            </div>
-            <button id="user-badge" class="btn-secondary" onclick="toggleUserModal()">Войти</button>
-        </div>
+        <button id="user-badge" class="btn-secondary" onclick="toggleUserModal()">Войти</button>
     </header>
 
     <main class="layout-wrapper">
         <section class="hero-block">
             <div class="profile-card">
-                <div class="avatar-wrapper">
-                    <img id="ceo-avatar" src="https://cdn.phototourl.com/free/2026-06-03-d10186d6-d493-4228-a46b-4784cc7c9f4e.png" alt="Бежин И. А.">
-                    <span class="status-indicator"></span>
-                </div>
-                <div class="profile-meta">
-                    <span class="role">Генеральный директор / Главный архитектор</span>
-                    <span class="name">Бежин И. А.</span>
-                </div>
-            </div>
-            
-            <h1 id="main-headline">Разработка высокотехнологичного ПО<br><span class="gradient-text">и проектирование систем</span></h1>
-            <p id="main-subline">Проектирование отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация распределенной инфраструктуры.</p>
-        </section>
-
-        <section class="console-section">
-            <div class="panel-header">
-                <div class="window-controls"><span></span><span></span><span></span></div>
-                <h2 id="tender-title" class="panel-title">Регистрация тендерных заявок</h2>
-            </div>
-            <div class="panel-body">
-                <p id="tender-desc" class="panel-hint">Внесите параметры технического задания для фиксации в распределенном стеке обработки.</p>
-                
-                <div class="form-grid">
-                    <input type="text" id="client-company" placeholder="Наименование организации">
-                    <input type="email" id="client-email" placeholder="Контактный Email">
-                </div>
-                <div class="form-grid calculation-row">
-                    <input type="text" id="tender-keywords" placeholder="Ключевые требования (например: СУБД, Linux)">
-                    <input type="number" id="client-budget" placeholder="Ориентировочный бюджет (руб)">
-                </div>
-                <div style="margin-top: 12px; text-align: right;">
-                    <button onclick="submitTenderToDB()" id="tender-btn" class="btn-primary">Отправить ТЗ</button>
-                </div>
-                
-                <div id="tender-result" class="log-box success-msg" style="display: none;"></div>
-            </div>
-
-            <div class="db-logs-area" id="my-tenders-box" style="display:none;">
-                <div class="logs-header">Лог транзакций в СУБД ядра:</div>
-                <div id="tenders-container"></div>
+                <img id="ceo-avatar" src="uploads/avatar_user.jpg" alt="Аватар">
+                <h1 id="main-headline">Разработка высокотехнологичного ПО</h1>
             </div>
         </section>
     </main>
 
     <div id="secure-gate" class="modal-backdrop" style="display: none;">
         <div class="modal-box admin-terminal-box">
-            <div class="modal-header">
-                <span class="modal-title">cjax@root-core-terminal:~</span>
-                <span class="modal-close" onclick="closeAdminModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div id="auth-zone">
-                    <p class="console-text"># enter_security_key</p>
-                    <input type="password" id="gate-pass" placeholder="••••••••••••" autofocus>
-                    <button onclick="tryGateAccess()" class="btn-primary terminal-enter-btn">Execute</button>
-                </div>
-                <div id="control-zone" style="display: none;">
-                    <div class="admin-fields">
-                        <label>Редактирование главного слогана:</label>
-                        <input type="text" id="input-headline">
-                        <label>Кастомный URL аватара:</label>
-                        <input type="text" id="input-avatar" placeholder="https://...">
-                        <button onclick="commitDevChanges()" class="btn-primary" style="margin-top:12px; width:100%;">Commit System Changes</button>
-                        <button onclick="revokeAdminAccess()" class="btn-secondary" style="margin-top:10px; width:100%;">Уничтожить токен сессии</button>
-                    </div>
-                </div>
+            <div id="control-zone" style="display: none;">
+                <h3>Панель управления Cjax.core</h3>
+                
+                <form action="upload_avatar.php" method="POST" enctype="multipart/form-data">
+                    <label>Обновить фото профиля (JPG/PNG):</label>
+                    <input type="file" name="avatar" accept="image/*" required>
+                    <button type="submit" class="btn-primary">Загрузить на сервер</button>
+                </form>
+
+                <input type="text" id="input-headline" placeholder="Новый слоган">
+                <button onclick="commitDevChanges()">Применить изменения</button>
             </div>
         </div>
     </div>
