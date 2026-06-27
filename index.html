@@ -12,11 +12,10 @@
 </head>
 <body class="theme-dark" id="app-body">
 
-    <!-- Верхняя панель -->
     <header class="nav-container">
         <div class="logo">Cjax<span class="dot">.</span>core</div>
         <div class="nav-right">
-            <button onclick="toggleTheme()" class="btn-secondary id="theme-toggle-btn">☀️ Светлая тема</button>
+            <button onclick="toggleTheme()" class="btn-secondary" id="theme-toggle-btn">☀️ Светлая тема</button>
             <div class="lang-box">
                 <button onclick="setLang('ru')" id="lang-ru" class="active-lang">RU</button>
                 <button onclick="setLang('en')" id="lang-en">EN</button>
@@ -26,10 +25,7 @@
         </div>
     </header>
 
-    <!-- Главный контент -->
     <main class="layout-wrapper">
-        
-        <!-- Блок Руководителя -->
         <section class="hero-block">
             <div class="profile-card">
                 <div class="avatar-wrapper">
@@ -43,10 +39,9 @@
             </div>
             
             <h1 id="main-headline">Разработка высокотехнологичного ПО<br><span class="gradient-text">и проектирование систем</span></h1>
-            <p id="main-subline">Проекпирование отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация распределенной инфраструктуры.</p>
+            <p id="main-subline">Проектирование отказоустойчивых архитектурных решений, обеспечение информационной безопасности и автоматизация распределенной инфраструктуры.</p>
         </section>
 
-        <!-- Интерактивная платформа ТЗ -->
         <section class="console-section">
             <div class="panel-header">
                 <div class="window-controls"><span></span><span></span><span></span></div>
@@ -68,14 +63,6 @@
                 </div>
                 
                 <div id="tender-result" class="log-box success-msg" style="display: none;"></div>
-
-                <div class="direct-contacts-zone">
-                    <span class="or-divider">Или свяжитесь напрямую без оформления заявки:</span>
-                    <div class="contacts-row">
-                        <a href="mailto:igorb9475@gmail.com" class="contact-link">✉️ Написать: igorb9475@gmail.com</a>
-                        <a href="tel:89872209843" class="contact-link">📞 Позвонить: 89872209843</a>
-                    </div>
-                </div>
             </div>
 
             <div class="db-logs-area" id="my-tenders-box" style="display:none;">
@@ -83,55 +70,8 @@
                 <div id="tenders-container"></div>
             </div>
         </section>
-
-        <!-- Технологический стек -->
-        <section class="tech-section">
-            <h2 id="stack-headline">Используемый технологический стек</h2>
-            <div class="tags-grid">
-                <div class="tag"><i class="devicon-linux-plain"></i> Linux Core</div>
-                <div class="tag"><i class="devicon-archlinux-plain"></i> Arch Linux</div>
-                <div class="tag"><i class="devicon-ubuntu-plain"></i> Ubuntu Server</div>
-                <div class="tag"><i class="devicon-cplusplus-plain"></i> C++</div>
-                <div class="tag"><i class="devicon-csharp-plain"></i> C#</div>
-                <div class="tag"><i class="devicon-python-plain"></i> Python</div>
-                <div class="tag"><i class="devicon-kotlin-plain"></i> Kotlin</div>
-                <div class="tag"><i class="devicon-go-original-wordmark"></i> Go</div>
-                <div class="tag"><i class="devicon-lua-plain"></i> Lua</div>
-                <div class="tag"><i class="devicon-typescript-plain"></i> TypeScript</div>
-                <div class="tag"><i class="devicon-nodejs-plain"></i> Node.js</div>
-                <div class="tag"><i class="devicon-docker-plain"></i> Docker</div>
-                <div class="tag"><i class="devicon-postgresql-plain"></i> PostgreSQL</div>
-            </div>
-        </section>
-
-        <!-- Реквизиты -->
-        <section class="legal-section">
-            <h2 id="legal-title">Раскрытие информации / Реквизиты</h2>
-            <div class="legal-table">
-                <div class="table-row"><span>Организация</span><strong>ООО "Сиджакс"</strong></div>
-                <div class="table-row"><span>Генеральный директор</span><strong>Бежин Игорь Алексеевич</strong></div>
-                <div class="table-row"><span>Юридический адрес</span><strong>г Санкт-Петербург, ул Вербная, д 27</strong></div>
-                <div class="table-row"><span>ИНН / КПП</span><strong>7814863792 / 781401001</strong></div>
-                <div class="table-row"><span>ОГРН</span><strong>1267800038098</strong></div>
-                <div class="table-row"><span>ОКВЭД основной</span><strong>62.01 (Разработка компьютерного ПО)</strong></div>
-            </div>
-        </section>
     </main>
 
-    <!-- Полноценное окно авторизации (Вместо старых списков из image_95aa81.jpg) -->
-    <div id="user-gate" class="modal-backdrop" style="display: none;">
-        <div class="modal-box">
-            <div class="modal-header">
-                <span class="modal-title">identity_provider_v3.0</span>
-                <span class="modal-close" onclick="toggleUserModal()">&times;</span>
-            </div>
-            <div class="modal-body" id="user-modal-body">
-                <!-- Контент генерируется динамически через JS (Форма логина + кнопки OAuth) -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Красивый интерактивный терминал главного админа (Fix для image_95adeb.png) -->
     <div id="secure-gate" class="modal-backdrop" style="display: none;">
         <div class="modal-box admin-terminal-box">
             <div class="modal-header">
@@ -145,27 +85,13 @@
                     <button onclick="tryGateAccess()" class="btn-primary terminal-enter-btn">Execute</button>
                 </div>
                 <div id="control-zone" style="display: none;">
-                    <p class="console-success">[MASTER-ROOT] Доступ к модификации СУБД открыт.</p>
-                    
                     <div class="admin-fields">
                         <label>Редактирование главного слогана:</label>
                         <input type="text" id="input-headline">
-                        
                         <label>Кастомный URL аватара:</label>
                         <input type="text" id="input-avatar" placeholder="https://...">
-                        
-                        <button onclick="commitDevChanges()" class="btn-primary save-btn" style="margin-top:12px; width:100%;">Commit System Changes</button>
-                        
-                        <!-- Новый мощный блок редактирования тендеров -->
-                        <div class="admin-db-editor-zone">
-                            <h3>Модератор базы данных тендеров</h3>
-                            <div id="admin-tenders-list-edit">
-                                <!-- Список тендеров с инпутами для редактирования цен и данных -->
-                            </div>
-                        </div>
-
-                        <button onclick="revokeAdminAccess()" class="btn-secondary logout-admin-btn">Уничтожить токен сессии админа</button>
-                        <p id="console-log"></p>
+                        <button onclick="commitDevChanges()" class="btn-primary" style="margin-top:12px; width:100%;">Commit System Changes</button>
+                        <button onclick="revokeAdminAccess()" class="btn-secondary" style="margin-top:10px; width:100%;">Уничтожить токен сессии</button>
                     </div>
                 </div>
             </div>
